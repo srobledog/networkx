@@ -174,17 +174,16 @@ def _generate_no_biconnected(max_attempts=50):
         if nx.is_connected(G) and not nx.is_biconnected(G):
             attempts = 0
             yield G
+        elif attempts >= max_attempts:
+            msg = f"Tried {attempts} times: no suitable Graph."
+            raise Exception(msg)
         else:
-            if attempts >= max_attempts:
-                msg = f"Tried {attempts} times: no suitable Graph."
-                raise Exception(msg)
-            else:
-                attempts += 1
+            attempts += 1
 
 
 def test_articulation_points():
     Ggen = _generate_no_biconnected()
-    for i in range(1):  # change 1 to 3 or more for more realizations.
+    for _ in range(1):
         G = next(Ggen)
         articulation_points = [{a} for a in nx.articulation_points(G)]
         for cut in nx.all_node_cuts(G):

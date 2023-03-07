@@ -6,6 +6,7 @@ Labels And Colors
 Use `nodelist` and `edgelist` to apply custom coloring and labels to various
 components of a graph.
 """
+
 import matplotlib.pyplot as plt
 import networkx as nx
 
@@ -38,15 +39,16 @@ nx.draw_networkx_edges(
 
 
 # some math labels
-labels = {}
-labels[0] = r"$a$"
-labels[1] = r"$b$"
-labels[2] = r"$c$"
-labels[3] = r"$d$"
-labels[4] = r"$\alpha$"
-labels[5] = r"$\beta$"
-labels[6] = r"$\gamma$"
-labels[7] = r"$\delta$"
+labels = {
+    0: "$a$",
+    1: "$b$",
+    2: "$c$",
+    3: "$d$",
+    4: "$\alpha$",
+    5: "$\beta$",
+    6: "$\gamma$",
+    7: "$\delta$",
+}
 nx.draw_networkx_labels(G, pos, labels, font_size=22, font_color="whitesmoke")
 
 plt.tight_layout()

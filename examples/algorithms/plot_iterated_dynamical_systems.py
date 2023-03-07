@@ -186,10 +186,7 @@ def discrete_dynamics_digraph(nmax, f, itermax=50000):
 
 def collatz_problem_digraph(nmax):
     def f(n):
-        if n % 2 == 0:
-            return n // 2
-        else:
-            return 3 * n + 1
+        return n // 2 if n % 2 == 0 else 3 * n + 1
 
     return discrete_dynamics_digraph(nmax, f)
 

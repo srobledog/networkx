@@ -296,7 +296,7 @@ def to_pandas_edgelist(
     else:
         edgelistdict = {source: source_nodes, target: target_nodes}
 
-    edgelistdict.update(edge_attr)
+    edgelistdict |= edge_attr
     return pd.DataFrame(edgelistdict, dtype=dtype)
 
 
@@ -582,10 +582,7 @@ def to_scipy_sparse_array(G, nodelist=None, dtype=None, weight="weight", format=
         d = data + data
         r = row + col
         c = col + row
-        # selfloop entries get double counted when symmetrizing
-        # so we subtract the data on the diagonal
-        selfloops = list(nx.selfloop_edges(G, data=weight, default=1))
-        if selfloops:
+        if selfloops := list(nx.selfloop_edges(G, data=weight, default=1)):
             diag_index, diag_data = zip(*((index[u], -wt) for u, v, wt in selfloops))
             d += diag_data
             r += diag_index
@@ -746,7 +743,7 @@ def from_scipy_sparse_array(
         #         for d in range(A[u, v]):
         #             G.add_edge(u, v, weight=1)
         #
-        triples = chain(((u, v, 1) for d in range(w)) for (u, v, w) in triples)
+        triples = chain(((u, v, 1) for _ in range(w)) for (u, v, w) in triples)
     # If we are creating an undirected multigraph, only add the edges from the
     # upper triangle of the matrix. Otherwise, add all the edges. This relies
     # on the fact that the vertices created in the
@@ -1130,11 +1127,6 @@ def from_numpy_array(A, parallel_edges=False, create_using=None):
             )
             for u, v in edges
         )
-    # If the entries in the adjacency matrix are integers, the graph is a
-    # multigraph, and parallel_edges is True, then create parallel edges, each
-    # with weight 1, for each entry in the adjacency matrix. Otherwise, create
-    # one edge for each positive entry in the adjacency matrix and set the
-    # weight of that edge to be the entry in the matrix.
     elif python_type is int and G.is_multigraph() and parallel_edges:
         chain = itertools.chain.from_iterable
         # The following line is equivalent to:
@@ -1144,7 +1136,7 @@ def from_numpy_array(A, parallel_edges=False, create_using=None):
         #             G.add_edge(u, v, weight=1)
         #
         triples = chain(
-            ((u, v, {"weight": 1}) for d in range(A[u, v])) for (u, v) in edges
+            ((u, v, {"weight": 1}) for _ in range(A[u, v])) for (u, v) in edges
         )
     else:  # basic data type
         triples = ((u, v, {"weight": python_type(A[u, v])}) for u, v in edges)

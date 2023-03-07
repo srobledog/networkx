@@ -33,8 +33,7 @@ def tarjan_bridge_graph():
         (11, 12, 14, 13, 11, 14),
     ]
     bridges = [(4, 8), (3, 5), (3, 17)]
-    G = nx.Graph(it.chain(*(pairwise(path) for path in ccs + bridges)))
-    return G
+    return nx.Graph(it.chain(*(pairwise(path) for path in ccs + bridges)))
 
 
 def test_weight_key():
@@ -261,7 +260,7 @@ def _assert_solution_properties(G, aug_edges, avail_dict=None):
     unique_aug = list(map(tuple, map(sorted, aug_edges)))
     assert len(aug_edges) == len(unique_aug), "edges should be unique"
 
-    assert not any(u == v for u, v in unique_aug), "should be no self-edges"
+    assert all(u != v for u, v in unique_aug), "should be no self-edges"
 
     assert not any(
         G.has_edge(u, v) for u, v in unique_aug
@@ -290,13 +289,11 @@ def _augment_and_check(
             # Find the augmentation if possible
             generator = nx.k_edge_augmentation(G, k=k, weight=weight, avail=avail)
             assert not isinstance(generator, list), "should always return an iter"
-            aug_edges = []
-            for edge in generator:
-                aug_edges.append(edge)
+            aug_edges = list(generator)
         except nx.NetworkXUnfeasible:
             infeasible = True
             info["infeasible"] = True
-            assert len(aug_edges) == 0, "should not generate anything if unfeasible"
+            assert not aug_edges, "should not generate anything if unfeasible"
 
             if avail is None:
                 n_nodes = G.number_of_nodes()

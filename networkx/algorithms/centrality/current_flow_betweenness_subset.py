@@ -109,10 +109,7 @@ def current_flow_betweenness_centrality_subset(
                 j = mapping[tt]
                 betweenness[s] += 0.5 * np.abs(row[i] - row[j])
                 betweenness[t] += 0.5 * np.abs(row[i] - row[j])
-    if normalized:
-        nb = (n - 1.0) * (n - 2.0)  # normalization factor
-    else:
-        nb = 2.0
+    nb = (n - 1.0) * (n - 2.0) if normalized else 2.0
     for v in H:
         betweenness[v] = betweenness[v] / nb + 1.0 / (2 - n)
     return {ordering[k]: v for k, v in betweenness.items()}
@@ -210,10 +207,7 @@ def edge_current_flow_betweenness_centrality_subset(
     H = nx.relabel_nodes(G, mapping)
     edges = (tuple(sorted((u, v))) for u, v in H.edges())
     betweenness = dict.fromkeys(edges, 0.0)
-    if normalized:
-        nb = (n - 1.0) * (n - 2.0)  # normalization factor
-    else:
-        nb = 2.0
+    nb = (n - 1.0) * (n - 2.0) if normalized else 2.0
     for row, (e) in flow_matrix_row(H, weight=weight, dtype=dtype, solver=solver):
         for ss in sources:
             i = mapping[ss]

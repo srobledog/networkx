@@ -103,10 +103,7 @@ def check_planarity(G, counterexample=False):
     embedding = planarity_state.lr_planarity()
     if embedding is None:
         # graph is not planar
-        if counterexample:
-            return False, get_counterexample(G)
-        else:
-            return False, None
+        return (False, get_counterexample(G)) if counterexample else (False, None)
     else:
         # graph is planar
         return True, embedding
@@ -116,15 +113,14 @@ def check_planarity_recursive(G, counterexample=False):
     """Recursive version of :meth:`check_planarity`."""
     planarity_state = LRPlanarity(G)
     embedding = planarity_state.lr_planarity_recursive()
-    if embedding is None:
-        # graph is not planar
-        if counterexample:
-            return False, get_counterexample_recursive(G)
-        else:
-            return False, None
-    else:
+    if embedding is not None:
         # graph is planar
         return True, embedding
+    # graph is not planar
+    if counterexample:
+        return False, get_counterexample_recursive(G)
+    else:
+        return False, None
 
 
 def get_counterexample(G):
@@ -245,9 +241,7 @@ class ConflictPair:
 
 def top_of_stack(l):
     """Returns the element on top of the stack."""
-    if not l:
-        return None
-    return l[-1]
+    return l[-1] if l else None
 
 
 class LRPlanarity:
@@ -561,17 +555,14 @@ class LRPlanarity:
                 if self.lowpt[ei] < self.height[v]:
                     if w == self.ordered_adjs[v][0]:  # e_i has return edge
                         self.lowpt_edge[e] = self.lowpt_edge[ei]
-                    else:  # add constraints of e_i
-                        if not self.add_constraints(ei, e):
-                            # graph is not planar
-                            return False
+                    elif not self.add_constraints(ei, e):
+                        # graph is not planar
+                        return False
 
                 ind[v] += 1
 
-            if not skip_final:
-                # remove back edges returning to parent
-                if e is not None:  # v isn't root
-                    self.remove_back_edges(e)
+            if not skip_final and e is not None:
+                self.remove_back_edges(e)
 
         return True
 
@@ -592,10 +583,9 @@ class LRPlanarity:
             if self.lowpt[ei] < self.height[v]:
                 if w == self.ordered_adjs[v][0]:  # e_i has return edge
                     self.lowpt_edge[e] = self.lowpt_edge[ei]
-                else:  # add constraints of e_i
-                    if not self.add_constraints(ei, e):
-                        # graph is not planar
-                        return False
+                elif not self.add_constraints(ei, e):
+                    # graph is not planar
+                    return False
 
         # remove back edges returning to parent
         if e is not None:  # v isn't root
@@ -723,14 +713,13 @@ class LRPlanarity:
                 self.left_ref[v] = w
                 self.right_ref[v] = w
                 self.dfs_embedding_recursive(w)
-            else:  # back edge
-                if self.side[ei] == 1:
-                    # place v directly after right_ref[w] in embed. list of w
-                    self.embedding.add_half_edge_cw(w, v, self.right_ref[w])
-                else:
-                    # place v directly before left_ref[w] in embed. list of w
-                    self.embedding.add_half_edge_ccw(w, v, self.left_ref[w])
-                    self.left_ref[w] = v
+            elif self.side[ei] == 1:
+                # place v directly after right_ref[w] in embed. list of w
+                self.embedding.add_half_edge_cw(w, v, self.right_ref[w])
+            else:
+                # place v directly before left_ref[w] in embed. list of w
+                self.embedding.add_half_edge_ccw(w, v, self.left_ref[w])
+                self.left_ref[w] = v
 
     def sign(self, e):
         """Resolve the relative side of an edge to the absolute side."""
@@ -867,10 +856,7 @@ class PlanarEmbedding(nx.DiGraph):
         set_data
 
         """
-        embedding = {}
-        for v in self:
-            embedding[v] = list(self.neighbors_cw_order(v))
-        return embedding
+        return {v: list(self.neighbors_cw_order(v)) for v in self}
 
     def set_data(self, data):
         """Inserts edges according to given sorted neighbor list.

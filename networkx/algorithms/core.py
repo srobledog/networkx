@@ -362,7 +362,7 @@ def k_corona(G, k, core_number=None):
     """
 
     def func(v, k, c):
-        return c[v] == k and k == sum(1 for w in G[v] if c[w] >= k)
+        return c[v] == k and k == sum(c[w] >= k for w in G[v])
 
     return _core_subgraph(G, func, k, core_number)
 
@@ -427,9 +427,7 @@ def k_truss(G, k):
             nbrs_u = set(H[u])
             seen.add(u)
             new_nbrs = [v for v in nbrs_u if v not in seen]
-            for v in new_nbrs:
-                if len(nbrs_u & set(H[v])) < (k - 2):
-                    to_drop.append((u, v))
+            to_drop.extend((u, v) for v in new_nbrs if len(nbrs_u & set(H[v])) < (k - 2))
         H.remove_edges_from(to_drop)
         n_dropped = len(to_drop)
         H.remove_nodes_from(list(nx.isolates(H)))
@@ -500,15 +498,13 @@ def onion_layers(G):
     # Performs the onion decomposition.
     current_core = 1
     current_layer = 1
-    # Sets vertices of degree 0 to layer 1, if any.
-    isolated_nodes = list(nx.isolates(G))
-    if len(isolated_nodes) > 0:
+    if isolated_nodes := list(nx.isolates(G)):
         for v in isolated_nodes:
             od_layers[v] = current_layer
             degrees.pop(v)
         current_layer = 2
     # Finds the layer for the remaining nodes.
-    while len(degrees) > 0:
+    while degrees:
         # Sets the order for looking at nodes.
         nodes = sorted(degrees, key=degrees.get)
         # Sets properly the current core.

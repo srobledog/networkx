@@ -28,12 +28,11 @@ def _generate_no_biconnected(max_attempts=50):
         if nx.is_connected(G) and not nx.is_biconnected(G):
             attempts = 0
             yield G
+        elif attempts >= max_attempts:
+            msg = f"Tried {max_attempts} times: no suitable Graph."
+            raise Exception(msg)
         else:
-            if attempts >= max_attempts:
-                msg = f"Tried {max_attempts} times: no suitable Graph."
-                raise Exception(msg)
-            else:
-                attempts += 1
+            attempts += 1
 
 
 def test_average_connectivity():
@@ -64,7 +63,7 @@ def test_average_connectivity_directed():
 def test_articulation_points():
     Ggen = _generate_no_biconnected()
     for flow_func in flow_funcs:
-        for i in range(3):
+        for _ in range(3):
             G = next(Ggen)
             errmsg = f"Assertion failed in function: {flow_func.__name__}"
             assert nx.node_connectivity(G, flow_func=flow_func) == 1, errmsg
@@ -372,7 +371,7 @@ class TestAllPairsNodeConnectivity:
     def test_all_pairs_connectivity_icosahedral(self):
         G = nx.icosahedral_graph()
         C = nx.all_pairs_node_connectivity(G)
-        assert all(5 == C[u][v] for u, v in itertools.combinations(G, 2))
+        assert all(C[u][v] == 5 for u, v in itertools.combinations(G, 2))
 
     def test_all_pairs_connectivity(self):
         G = nx.Graph()

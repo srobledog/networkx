@@ -140,8 +140,9 @@ def lowest_common_ancestor(G, node1, node2, default=None):
     --------
     all_pairs_lowest_common_ancestor"""
 
-    ans = list(all_pairs_lowest_common_ancestor(G, pairs=[(node1, node2)]))
-    if ans:
+    if ans := list(
+        all_pairs_lowest_common_ancestor(G, pairs=[(node1, node2)])
+    ):
         assert len(ans) == 1
         return ans[0][1]
     return default
@@ -244,10 +245,7 @@ def tree_all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
     # Iterative implementation of Tarjan's offline lca algorithm
     # as described in CLRS on page 521 (2nd edition)/page 584 (3rd edition)
     uf = UnionFind()
-    ancestors = {}
-    for node in G:
-        ancestors[node] = uf[node]
-
+    ancestors = {node: uf[node] for node in G}
     colors = defaultdict(bool)
     for node in nx.dfs_postorder_nodes(G, root):
         colors[node] = True

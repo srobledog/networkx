@@ -12,10 +12,7 @@ if len(sys.argv) < 2 or len(sys.argv) > 3:
     sys.exit(-1)
 
 tag = sys.argv[1]
-if len(sys.argv) < 3:
-    compare_tag = None
-else:
-    compare_tag = sys.argv[2]
+compare_tag = None if len(sys.argv) < 3 else sys.argv[2]
 
 
 def call(cmd):
@@ -60,7 +57,7 @@ else:
         call(f"git log --since='{tag_date}' --pretty=%s --reverse"),
     )
 for c in commits:
-    print("- " + c)
+    print(f"- {c}")
 
 print(f"\nIt contained the following {len(merges)} merges:\n")
 for merge, message in merges:
@@ -69,7 +66,7 @@ for merge, message in merges:
     else:
         PR = ""
 
-    print("- " + message + PR)
+    print(f"- {message}{PR}")
 
 print("\nMade by the following committers [alphabetical by last name]:\n")
 
@@ -83,12 +80,11 @@ authors = [a.strip() for a in authors if a.strip()]
 
 
 def key(author):
-    author = list(author.split())
-    if len(author) > 0:
+    if author := list(author.split()):
         return author[-1]
 
 
 authors = sorted(set(authors), key=key)
 
 for a in authors:
-    print("- " + a)
+    print(f"- {a}")

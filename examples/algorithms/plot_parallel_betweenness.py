@@ -28,10 +28,10 @@ def chunks(l, n):
     """Divide a list of nodes `l` in `n` chunks"""
     l_c = iter(l)
     while 1:
-        x = tuple(itertools.islice(l_c, n))
-        if not x:
+        if x := tuple(itertools.islice(l_c, n)):
+            yield x
+        else:
             return
-        yield x
 
 
 def betweenness_centrality_parallel(G, processes=None):

@@ -77,7 +77,7 @@ def number_attracting_components(G):
     is_attracting_component
 
     """
-    return sum(1 for ac in attracting_components(G))
+    return sum(1 for _ in attracting_components(G))
 
 
 @not_implemented_for("undirected")
@@ -106,6 +106,4 @@ def is_attracting_component(G):
 
     """
     ac = list(attracting_components(G))
-    if len(ac) == 1:
-        return len(ac[0]) == len(G)
-    return False
+    return len(ac[0]) == len(G) if len(ac) == 1 else False

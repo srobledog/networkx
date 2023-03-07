@@ -115,13 +115,13 @@ def average_neighbor_degree(G, source="out", target="out", nodes=None, weight=No
             raise nx.NetworkXError(
                 f"target argument {target} must be 'in', 'out' or 'in+out'"
             )
-    else:
-        if source != "out" or target != "out":
-            raise nx.NetworkXError(
-                f"source and target arguments are only supported for directed graphs"
-            )
+    elif source == "out" and target == "out":
         source_degree = target_degree = G.degree
 
+    else:
+        raise nx.NetworkXError(
+            "source and target arguments are only supported for directed graphs"
+        )
     # precompute target degrees -- should *not* be weighted degree
     t_deg = dict(target_degree())
 

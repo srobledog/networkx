@@ -51,7 +51,6 @@ def voterank(G, number_of_nodes=None):
         Sci. Rep. 6, 27823; doi: 10.1038/srep27823.
     """
     influential_nodes = []
-    vote_rank = {}
     if len(G) == 0:
         return influential_nodes
     if number_of_nodes is None or number_of_nodes > len(G):
@@ -62,9 +61,7 @@ def voterank(G, number_of_nodes=None):
     else:
         # For undirected graphs compute average degree
         avgDegree = sum(deg for _, deg in G.degree()) / len(G)
-    # step 1 - initiate all nodes to (0,1) (score, voting ability)
-    for n in G.nodes():
-        vote_rank[n] = [0, 1]
+    vote_rank = {n: [0, 1] for n in G.nodes()}
     # Repeat steps 1b to 4 until num_seeds are elected.
     for _ in range(number_of_nodes):
         # step 1b - reset rank

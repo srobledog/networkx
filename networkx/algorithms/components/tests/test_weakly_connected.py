@@ -68,7 +68,7 @@ class TestWeaklyConnected:
 
     def test_null_graph(self):
         G = nx.DiGraph()
-        assert list(nx.weakly_connected_components(G)) == []
+        assert not list(nx.weakly_connected_components(G))
         assert nx.number_weakly_connected_components(G) == 0
         with pytest.raises(nx.NetworkXPointlessConcept):
             next(nx.is_weakly_connected(G))

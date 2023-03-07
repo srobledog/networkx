@@ -87,26 +87,17 @@ def projected_graph(B, nodes, multigraph=False):
         raise nx.NetworkXError("not defined for multigraphs")
     if B.is_directed():
         directed = True
-        if multigraph:
-            G = nx.MultiDiGraph()
-        else:
-            G = nx.DiGraph()
+        G = nx.MultiDiGraph() if multigraph else nx.DiGraph()
     else:
         directed = False
-        if multigraph:
-            G = nx.MultiGraph()
-        else:
-            G = nx.Graph()
+        G = nx.MultiGraph() if multigraph else nx.Graph()
     G.graph.update(B.graph)
     G.add_nodes_from((n, B.nodes[n]) for n in nodes)
     for u in nodes:
         nbrs2 = {v for nbr in B[u] for v in B[nbr] if v != u}
         if multigraph:
             for n in nbrs2:
-                if directed:
-                    links = set(B[u]) & set(B.pred[n])
-                else:
-                    links = set(B[u]) & set(B[n])
+                links = set(B[u]) & set(B.pred[n]) if directed else set(B[u]) & set(B[n])
                 for l in links:
                     if not G.has_edge(u, n, l):
                         G.add_edge(u, n, key=l)
@@ -207,10 +198,7 @@ def weighted_projected_graph(B, nodes, ratio=False):
         for v in nbrs2:
             vnbrs = set(pred[v])
             common = unbrs & vnbrs
-            if not ratio:
-                weight = len(common)
-            else:
-                weight = len(common) / n_top
+            weight = len(common) / n_top if ratio else len(common)
             G.add_edge(u, v, weight=weight)
     return G
 

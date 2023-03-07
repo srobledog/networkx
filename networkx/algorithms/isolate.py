@@ -104,4 +104,4 @@ def number_of_isolates(G):
 
     """
     # TODO This can be parallelized.
-    return sum(1 for v in isolates(G))
+    return sum(1 for _ in isolates(G))

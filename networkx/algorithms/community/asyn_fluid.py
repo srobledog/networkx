@@ -66,7 +66,7 @@ def asyn_fluidc(G, k, max_iter=100, seed=None):
     # Initial checks
     if not isinstance(k, int):
         raise NetworkXError("k must be an integer.")
-    if not k > 0:
+    if k <= 0:
         raise NetworkXError("k must be greater than 0.")
     if not is_connected(G):
         raise NetworkXError("Fluid Communities require connected Graphs.")

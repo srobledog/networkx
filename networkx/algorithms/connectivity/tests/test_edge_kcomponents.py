@@ -105,18 +105,14 @@ def _check_edge_connectivity(G):
                 alt_sccs = fset(nx.strongly_connected_components(G))
                 assert alt_sccs == ccs_local, "k=1 failed alt"
                 assert alt_sccs == ccs_subgraph, "k=1 failed alt"
-        else:
-            # Test special case methods are the same as the aux graph
-            if k == 1:
-                alt_ccs = fset(nx.connected_components(G))
-                assert alt_ccs == ccs_local, "k=1 failed alt"
-                assert alt_ccs == ccs_subgraph, "k=1 failed alt"
-            elif k == 2:
-                alt_bridge_ccs = fset(bridge_components(G))
-                assert alt_bridge_ccs == ccs_local, "k=2 failed alt"
-                assert alt_bridge_ccs == ccs_subgraph, "k=2 failed alt"
-            # if new methods for k == 3 or k == 4 are implemented add them here
-
+        elif k == 1:
+            alt_ccs = fset(nx.connected_components(G))
+            assert alt_ccs == ccs_local, "k=1 failed alt"
+            assert alt_ccs == ccs_subgraph, "k=1 failed alt"
+        elif k == 2:
+            alt_bridge_ccs = fset(bridge_components(G))
+            assert alt_bridge_ccs == ccs_local, "k=2 failed alt"
+            assert alt_bridge_ccs == ccs_subgraph, "k=2 failed alt"
         # Check the general subgraph method works by itself
         alt_subgraph_ccs = fset(
             [set(C.nodes()) for C in general_k_edge_subgraphs(G, k=k)]

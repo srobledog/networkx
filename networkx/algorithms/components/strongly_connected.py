@@ -300,7 +300,7 @@ def number_strongly_connected_components(G):
     -----
     For directed graphs only.
     """
-    return sum(1 for scc in strongly_connected_components(G))
+    return sum(1 for _ in strongly_connected_components(G))
 
 
 @not_implemented_for("undirected")
@@ -427,7 +427,7 @@ def condensation(G, scc=None):
         return C
     for i, component in enumerate(scc):
         members[i] = component
-        mapping.update((n, i) for n in component)
+        mapping |= ((n, i) for n in component)
     number_of_components = i + 1
     C.add_nodes_from(range(number_of_components))
     C.add_edges_from(

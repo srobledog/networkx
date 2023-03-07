@@ -136,7 +136,7 @@ def strategy_independent_set(G, colors):
 
     """
     remaining_nodes = set(G)
-    while len(remaining_nodes) > 0:
+    while remaining_nodes:
         nodes = _maximal_independent_set(G.subgraph(remaining_nodes))
         remaining_nodes -= nodes
         yield from nodes
@@ -241,10 +241,7 @@ def strategy_saturation_largest_first(G, colors):
         # Compute the maximum saturation and the set of nodes that
         # achieve that saturation.
         saturation = {v: len(c) for v, c in distinct_colors.items() if v not in colors}
-        # Yield the node with the highest saturation, and break ties by
-        # degree.
-        node = max(saturation, key=lambda v: (saturation[v], G.degree(v)))
-        yield node
+        yield max(saturation, key=lambda v: (saturation[v], G.degree(v)))
 
 
 #: Dictionary mapping name of a strategy as a string to the strategy function.

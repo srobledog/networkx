@@ -58,10 +58,7 @@ def maximal_independent_set(G, nodes=None, seed=None):
     This algorithm does not solve the maximum independent set problem.
 
     """
-    if not nodes:
-        nodes = {seed.choice(list(G))}
-    else:
-        nodes = set(nodes)
+    nodes = set(nodes) if nodes else {seed.choice(list(G))}
     if not nodes.issubset(G):
         raise nx.NetworkXUnfeasible(f"{nodes} is not a subset of the nodes of G")
     neighbors = set.union(*[set(G.adj[v]) for v in nodes])

@@ -338,10 +338,7 @@ def _gen_graph(G, partition):
 
 def _convert_multigraph(G, weight, is_directed):
     """Convert a Multigraph to normal Graph"""
-    if is_directed:
-        H = nx.DiGraph()
-    else:
-        H = nx.Graph()
+    H = nx.DiGraph() if is_directed else nx.Graph()
     H.add_nodes_from(G)
     for u, v, wt in G.edges(data=weight, default=1):
         if H.has_edge(u, v):

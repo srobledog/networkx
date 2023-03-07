@@ -25,9 +25,7 @@ def are_edge_disjoint_paths(G, paths):
     paths_edges = [list(pairwise(p)) for p in paths]
     num_of_edges = sum(len(e) for e in paths_edges)
     num_unique_edges = len(set.union(*[set(es) for es in paths_edges]))
-    if num_of_edges == num_unique_edges:
-        return True
-    return False
+    return num_of_edges == num_unique_edges
 
 
 def are_node_disjoint_paths(G, paths):
@@ -39,9 +37,7 @@ def are_node_disjoint_paths(G, paths):
     st = {paths[0][0], paths[0][-1]}
     num_of_nodes = len([n for path in paths for n in path if n not in st])
     num_unique_nodes = len({n for path in paths for n in path if n not in st})
-    if num_of_nodes == num_unique_nodes:
-        return True
-    return False
+    return num_of_nodes == num_unique_nodes
 
 
 def test_graph_from_pr_2053():

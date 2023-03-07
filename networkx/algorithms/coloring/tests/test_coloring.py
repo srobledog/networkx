@@ -433,11 +433,11 @@ class TestColoring:
 
     def test_strategy_saturation_largest_first(self):
         def color_remaining_nodes(
-            G,
-            colored_nodes,
-            full_color_assignment=None,
-            nodes_to_add_between_calls=1,
-        ):
+                G,
+                colored_nodes,
+                full_color_assignment=None,
+                nodes_to_add_between_calls=1,
+            ):
             color_assignments = []
             aux_colored_nodes = colored_nodes.copy()
 
@@ -459,7 +459,7 @@ class TestColoring:
 
                 # Color nodes between iterations
                 for i in range(nodes_to_add_between_calls - 1):
-                    if not len(color_assignments) + len(colored_nodes) >= len(
+                    if len(color_assignments) + len(colored_nodes) < len(
                         full_color_assignment
                     ):
                         full_color_assignment_node, color = full_color_assignment[

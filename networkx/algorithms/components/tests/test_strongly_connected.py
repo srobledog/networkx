@@ -135,7 +135,7 @@ class TestStronglyConnected:
         scc = list(nx.strongly_connected_components(G))
         cG = nx.condensation(G, scc)
         assert list(cG.nodes()) == [0]
-        assert list(cG.edges()) == []
+        assert not list(cG.edges())
 
     def test_contract_scc_edge(self):
         G = nx.DiGraph()
@@ -147,10 +147,7 @@ class TestStronglyConnected:
         scc = list(nx.strongly_connected_components(G))
         cG = nx.condensation(G, scc)
         assert sorted(cG.nodes()) == [0, 1]
-        if 1 in scc[0]:
-            edge = (0, 1)
-        else:
-            edge = (1, 0)
+        edge = (0, 1) if 1 in scc[0] else (1, 0)
         assert list(cG.edges()) == [edge]
 
     def test_condensation_mapping_and_members(self):
@@ -159,16 +156,16 @@ class TestStronglyConnected:
         cG = nx.condensation(G)
         mapping = cG.graph["mapping"]
         assert all(n in G for n in mapping)
-        assert all(0 == cN for n, cN in mapping.items() if n in C[0])
-        assert all(1 == cN for n, cN in mapping.items() if n in C[1])
+        assert all(cN == 0 for n, cN in mapping.items() if n in C[0])
+        assert all(cN == 1 for n, cN in mapping.items() if n in C[1])
         for n, d in cG.nodes(data=True):
             assert set(C[n]) == cG.nodes[n]["members"]
 
     def test_null_graph(self):
         G = nx.DiGraph()
-        assert list(nx.strongly_connected_components(G)) == []
-        assert list(nx.kosaraju_strongly_connected_components(G)) == []
-        assert list(nx.strongly_connected_components_recursive(G)) == []
+        assert not list(nx.strongly_connected_components(G))
+        assert not list(nx.kosaraju_strongly_connected_components(G))
+        assert not list(nx.strongly_connected_components_recursive(G))
         assert len(nx.condensation(G)) == 0
         pytest.raises(
             nx.NetworkXPointlessConcept, nx.is_strongly_connected, nx.DiGraph()

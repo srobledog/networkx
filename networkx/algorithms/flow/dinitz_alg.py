@@ -145,11 +145,7 @@ def dinitz_impl(G, s, t, capacity, residual, cutoff):
     if s == t:
         raise nx.NetworkXError("source and sink are the same node")
 
-    if residual is None:
-        R = build_residual_network(G, capacity)
-    else:
-        R = residual
-
+    R = build_residual_network(G, capacity) if residual is None else residual
     # Initialize/reset the residual network.
     for u in R:
         for e in R[u].values():
@@ -168,9 +164,7 @@ def dinitz_impl(G, s, t, capacity, residual, cutoff):
     def breath_first_search():
         parents = {}
         queue = deque([s])
-        while queue:
-            if t in parents:
-                break
+        while queue and t not in parents:
             u = queue.popleft()
             for v in R_succ[u]:
                 attr = R_succ[u][v]

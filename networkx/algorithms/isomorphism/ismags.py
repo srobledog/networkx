@@ -477,8 +477,7 @@ class ISMAGS:
         candidates = self._find_nodecolor_candidates()
         la_candidates = self._get_lookahead_candidates()
         for sgn in self.subgraph:
-            extra_candidates = la_candidates[sgn]
-            if extra_candidates:
+            if extra_candidates := la_candidates[sgn]:
                 candidates[sgn] = candidates[sgn] | {frozenset(extra_candidates)}
 
         if any(candidates.values()):
@@ -511,11 +510,12 @@ class ISMAGS:
         which the graph nodes are feasible candidates for the subgraph node, as
         determined by looking ahead one edge.
         """
-        g_counts = {}
-        for gn in self.graph:
-            g_counts[gn] = self._find_neighbor_color_count(
+        g_counts = {
+            gn: self._find_neighbor_color_count(
                 self.graph, gn, self._gn_colors, self._ge_colors
             )
+            for gn in self.graph
+        }
         candidates = defaultdict(set)
         for sgn in self.subgraph:
             sg_count = self._find_neighbor_color_count(
@@ -695,10 +695,7 @@ class ISMAGS:
         """
         constraints = []
         for node_i, node_ts in cosets.items():
-            for node_t in node_ts:
-                if node_i != node_t:
-                    # Node i must be smaller than node t.
-                    constraints.append((node_i, node_t))
+            constraints.extend((node_i, node_t) for node_t in node_ts if node_i != node_t)
         return constraints
 
     @staticmethod
@@ -813,19 +810,15 @@ class ISMAGS:
             sge_color = self._sge_colors[sgn2, sgn1]
         if sge_color in self._edge_compatibility:
             ge_color = self._edge_compatibility[sge_color]
-            g_edges = self._ge_partitions[ge_color]
+            return self._ge_partitions[ge_color]
         else:
-            g_edges = []
-        return g_edges
+            return []
 
     def _map_nodes(self, sgn, candidates, constraints, mapping=None, to_be_mapped=None):
         """
         Find all subgraph isomorphisms honoring constraints.
         """
-        if mapping is None:
-            mapping = {}
-        else:
-            mapping = mapping.copy()
+        mapping = {} if mapping is None else mapping.copy()
         if to_be_mapped is None:
             to_be_mapped = set(self.subgraph.nodes)
 
@@ -1082,18 +1075,8 @@ class ISMAGS:
         Processes ordered pair partitions as per the reference paper. Finds and
         returns all permutations and cosets that leave the graph unchanged.
         """
-        if orbits is None:
-            orbits = [{node} for node in graph.nodes]
-        else:
-            # Note that we don't copy orbits when we are given one. This means
-            # we leak information between the recursive branches. This is
-            # intentional!
-            orbits = orbits
-        if cosets is None:
-            cosets = {}
-        else:
-            cosets = cosets.copy()
-
+        orbits = [{node} for node in graph.nodes] if orbits is None else orbits
+        cosets = {} if cosets is None else cosets.copy()
         assert all(
             len(t_p) == len(b_p) for t_p, b_p in zip(top_partitions, bottom_partitions)
         )
@@ -1103,11 +1086,7 @@ class ISMAGS:
             # All nodes are mapped
             permutations = self._find_permutations(top_partitions, bottom_partitions)
             self._update_orbits(orbits, permutations)
-            if permutations:
-                return [permutations], cosets
-            else:
-                return [], cosets
-
+            return ([permutations], cosets) if permutations else ([], cosets)
         permutations = []
         unmapped_nodes = {
             (node, idx)

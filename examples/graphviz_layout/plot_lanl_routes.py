@@ -26,9 +26,8 @@ def lanl_graph():
 
     G = nx.Graph()
 
-    time = {}
-    time[0] = 0  # assign 0 to center node
-    for line in fh.readlines():
+    time = {0: 0}
+    for line in fh:
         (head, tail, rtt) = line.split()
         G.add_edge(int(head), int(tail))
         time[int(head)] = float(rtt)

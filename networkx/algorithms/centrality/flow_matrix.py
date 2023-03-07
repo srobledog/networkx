@@ -40,10 +40,7 @@ class InverseLaplacian:
         (n, n) = L.shape
         self.dtype = dtype
         self.n = n
-        if width is None:
-            self.w = self.width(L)
-        else:
-            self.w = width
+        self.w = self.width(L) if width is None else width
         self.C = np.zeros((self.w, n), dtype=dtype)
         self.L1 = L[1:, 1:]
         self.init_solver(L)

@@ -114,7 +114,7 @@ def stoer_wagner(G, weight="weight", heap=BinaryHeap):
         for v, e in G[u].items():
             h.insert(v, -e["weight"])
         # Repeat until all but one node has been added to A.
-        for j in range(n - i - 2):
+        for _ in range(n - i - 2):
             u = h.pop()[0]
             A.add(u)
             for v, e in G[u].items():

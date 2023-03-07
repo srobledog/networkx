@@ -92,7 +92,7 @@ packages = [
     "networkx.utils",
 ]
 
-docdirbase = "share/doc/networkx-%s" % version
+docdirbase = f"share/doc/networkx-{version}"
 # add basic documentation
 data = [(docdirbase, glob("*.txt"))]
 # add examples
@@ -161,7 +161,7 @@ def parse_requirements_file(filename):
 
 install_requires = []
 extras_require = {
-    dep: parse_requirements_file("requirements/" + dep + ".txt")
+    dep: parse_requirements_file(f"requirements/{dep}.txt")
     for dep in ["default", "developer", "doc", "extra", "test"]
 }
 

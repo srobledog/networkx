@@ -75,7 +75,7 @@ def non_randomness(G, k=None, weight="weight"):
 
     if not nx.is_connected(G):
         raise nx.NetworkXException("Non connected graph.")
-    if len(list(nx.selfloop_edges(G))) > 0:
+    if list(nx.selfloop_edges(G)):
         raise nx.NetworkXError("Graph must not contain self-loops")
 
     if k is None:

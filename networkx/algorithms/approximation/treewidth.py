@@ -102,8 +102,7 @@ class MinDegreeHeuristic:
         self.count = itertools.count()
 
         # build heap with initial degrees
-        for n in graph:
-            self._degreeq.append((len(graph[n]), next(self.count), n))
+        self._degreeq.extend((len(graph[n]), next(self.count), n) for n in graph)
         heapify(self._degreeq)
 
     def best_node(self, graph):
@@ -225,13 +224,7 @@ def treewidth_decomp(G, heuristic=min_fill_in_heuristic):
         # get node and its neighbors from the stack
         (curr_node, nbrs) = node_stack.pop()
 
-        # find a bag all neighbors are in
-        old_bag = None
-        for bag in decomp.nodes:
-            if nbrs <= bag:
-                old_bag = bag
-                break
-
+        old_bag = next((bag for bag in decomp.nodes if nbrs <= bag), None)
         if old_bag is None:
             # no old_bag was found: just connect to the first_bag
             old_bag = first_bag

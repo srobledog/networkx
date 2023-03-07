@@ -144,7 +144,7 @@ def _directed_triangles_and_degree_iter(G, nodes=None):
             jsuccs = set(G._succ[j]) - {j}
             directed_triangles += sum(
                 1
-                for k in chain(
+                for _ in chain(
                     (ipreds & jpreds),
                     (ipreds & jsuccs),
                     (isuccs & jpreds),
@@ -369,30 +369,22 @@ def clustering(G, nodes=None, weight=None):
        Physical Review E, 76(2), 026107 (2007).
     """
     if G.is_directed():
-        if weight is not None:
-            td_iter = _directed_weighted_triangles_and_degree_iter(G, nodes, weight)
-            clusterc = {
-                v: 0 if t == 0 else t / ((dt * (dt - 1) - 2 * db) * 2)
-                for v, dt, db, t in td_iter
-            }
-        else:
-            td_iter = _directed_triangles_and_degree_iter(G, nodes)
-            clusterc = {
-                v: 0 if t == 0 else t / ((dt * (dt - 1) - 2 * db) * 2)
-                for v, dt, db, t in td_iter
-            }
+        td_iter = (
+            _directed_weighted_triangles_and_degree_iter(G, nodes, weight)
+            if weight is not None
+            else _directed_triangles_and_degree_iter(G, nodes)
+        )
+        clusterc = {
+            v: 0 if t == 0 else t / ((dt * (dt - 1) - 2 * db) * 2)
+            for v, dt, db, t in td_iter
+        }
+    elif weight is not None:
+        td_iter = _weighted_triangles_and_degree_iter(G, nodes, weight)
+        clusterc = {v: 0 if t == 0 else t / (d * (d - 1)) for v, d, t in td_iter}
     else:
-        # The formula 2*T/(d*(d-1)) from docs is t/(d*(d-1)) here b/c t==2*T
-        if weight is not None:
-            td_iter = _weighted_triangles_and_degree_iter(G, nodes, weight)
-            clusterc = {v: 0 if t == 0 else t / (d * (d - 1)) for v, d, t in td_iter}
-        else:
-            td_iter = _triangles_and_degree_iter(G, nodes)
-            clusterc = {v: 0 if t == 0 else t / (d * (d - 1)) for v, d, t, _ in td_iter}
-    if nodes in G:
-        # Return the value of the sole entry in the dictionary.
-        return clusterc[nodes]
-    return clusterc
+        td_iter = _triangles_and_degree_iter(G, nodes)
+        clusterc = {v: 0 if t == 0 else t / (d * (d - 1)) for v, d, t, _ in td_iter}
+    return clusterc[nodes] if nodes in G else clusterc
 
 
 @nx._dispatch("transitivity")
@@ -428,7 +420,7 @@ def transitivity(G):
         (t, d * (d - 1)) for v, d, t, _ in _triangles_and_degree_iter(G)
     ]
     # If the graph is empty
-    if len(triangles_contri) == 0:
+    if not triangles_contri:
         return 0
     triangles, contri = map(sum, zip(*triangles_contri))
     return 0 if triangles == 0 else triangles / contri
@@ -489,10 +481,7 @@ def square_clustering(G, nodes=None):
         Bipartite Networks. Physica A: Statistical Mechanics and its Applications 387.27 (2008): 6869–6875.
         https://arxiv.org/abs/0710.0117v1
     """
-    if nodes is None:
-        node_iter = G
-    else:
-        node_iter = G.nbunch_iter(nodes)
+    node_iter = G if nodes is None else G.nbunch_iter(nodes)
     clustering = {}
     for v in node_iter:
         clustering[v] = 0
@@ -506,10 +495,7 @@ def square_clustering(G, nodes=None):
             potential += (len(G[u]) - degm) + (len(G[w]) - degm) + squares
         if potential > 0:
             clustering[v] /= potential
-    if nodes in G:
-        # Return the value of the sole entry in the dictionary.
-        return clustering[nodes]
-    return clustering
+    return clustering[nodes] if nodes in G else clustering
 
 
 @nx._dispatch("generalized_degree")

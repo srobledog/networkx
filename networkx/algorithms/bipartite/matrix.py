@@ -161,6 +161,6 @@ def from_biadjacency_matrix(A, create_using=None, edge_attribute="weight"):
     # be the entry in the matrix.
     if A.dtype.kind in ("i", "u") and G.is_multigraph():
         chain = itertools.chain.from_iterable
-        triples = chain(((u, v, 1) for d in range(w)) for (u, v, w) in triples)
+        triples = chain(((u, v, 1) for _ in range(w)) for (u, v, w) in triples)
     G.add_weighted_edges_from(triples, weight=edge_attribute)
     return G

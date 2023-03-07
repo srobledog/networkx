@@ -122,7 +122,7 @@ def kernighan_lin_bisection(G, partition=None, max_iter=10, weight="weight", see
             [(index[u], e.get(weight, 1)) for u, e in G[v].items()] for v in labels
         ]
 
-    for i in range(max_iter):
+    for _ in range(max_iter):
         costs = list(_kernighan_lin_sweep(edges, side))
         min_cost, min_i, _ = min(costs)
         if min_cost >= 0:

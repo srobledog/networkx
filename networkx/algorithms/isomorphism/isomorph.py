@@ -38,22 +38,18 @@ def could_be_isomorphic(G1, G2):
     d1 = G1.degree()
     t1 = nx.triangles(G1)
     clqs_1 = list(nx.find_cliques(G1))
-    c1 = {n: sum(1 for c in clqs_1 if n in c) for n in G1}  # number of cliques
+    c1 = {n: sum(n in c for c in clqs_1) for n in G1}
     props1 = [[d, t1[v], c1[v]] for v, d in d1]
     props1.sort()
 
     d2 = G2.degree()
     t2 = nx.triangles(G2)
     clqs_2 = list(nx.find_cliques(G2))
-    c2 = {n: sum(1 for c in clqs_2 if n in c) for n in G2}  # number of cliques
+    c2 = {n: sum(n in c for c in clqs_2) for n in G2}
     props2 = [[d, t2[v], c2[v]] for v, d in d2]
     props2.sort()
 
-    if props1 != props2:
-        return False
-
-    # OK...
-    return True
+    return props1 == props2
 
 
 graph_could_be_isomorphic = could_be_isomorphic
@@ -89,11 +85,7 @@ def fast_could_be_isomorphic(G1, G2):
     props2 = [[d, t2[v]] for v, d in d2]
     props2.sort()
 
-    if props1 != props2:
-        return False
-
-    # OK...
-    return True
+    return props1 == props2
 
 
 fast_graph_could_be_isomorphic = fast_could_be_isomorphic
@@ -121,11 +113,7 @@ def faster_could_be_isomorphic(G1, G2):
     d1 = sorted(d for n, d in G1.degree())
     d2 = sorted(d for n, d in G2.degree())
 
-    if d1 != d2:
-        return False
-
-    # OK...
-    return True
+    return d1 == d2
 
 
 faster_graph_could_be_isomorphic = faster_could_be_isomorphic

@@ -275,8 +275,7 @@ def attribute_ac(M):
         M = M / M.sum()
     s = (M @ M).sum()
     t = M.trace()
-    r = (t - s) / (1 - s)
-    return r
+    return (t - s) / (1 - s)
 
 
 def _numeric_ac(M, mapping):

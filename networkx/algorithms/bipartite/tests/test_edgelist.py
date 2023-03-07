@@ -131,8 +131,8 @@ class TestEdgelist:
 
     def test_latin1(self):
         G = nx.Graph()
-        name1 = "Bj" + chr(246) + "rk"
-        name2 = chr(220) + "ber"
+        name1 = f"Bj{chr(246)}rk"
+        name2 = f"{chr(220)}ber"
         G.add_edge(name1, "Radiohead", **{name2: 3})
         G.add_node(name1, bipartite=0)
         G.add_node("Radiohead", bipartite=1)

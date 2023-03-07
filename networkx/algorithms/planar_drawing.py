@@ -38,22 +38,8 @@ def combinatorial_embedding_to_pos(embedding, fully_triangulate=False):
     if len(embedding.nodes()) < 4:
         # Position the node in any triangle
         default_positions = [(0, 0), (2, 0), (1, 1)]
-        pos = {}
-        for i, v in enumerate(embedding.nodes()):
-            pos[v] = default_positions[i]
-        return pos
-
+        return {v: default_positions[i] for i, v in enumerate(embedding.nodes())}
     embedding, outer_face = triangulate_embedding(embedding, fully_triangulate)
-
-    # The following dicts map a node to another node
-    # If a node is not in the key set it means that the node is not yet in G_k
-    # If a node maps to None then the corresponding subtree does not exist
-    left_t_child = {}
-    right_t_child = {}
-
-    # The following dicts map a node to an integer
-    delta_x = {}
-    y_coordinate = {}
 
     node_list = get_canonical_ordering(embedding, outer_face)
 
@@ -62,11 +48,10 @@ def combinatorial_embedding_to_pos(embedding, fully_triangulate=False):
     # Initialization
     v1, v2, v3 = node_list[0][0], node_list[1][0], node_list[2][0]
 
-    delta_x[v1] = 0
-    y_coordinate[v1] = 0
-    right_t_child[v1] = v3
-    left_t_child[v1] = None
-
+    delta_x = {v1: 0}
+    y_coordinate = {v1: 0}
+    right_t_child = {v1: v3}
+    left_t_child = {v1: None}
     delta_x[v2] = 1
     y_coordinate[v2] = 0
     right_t_child[v2] = None
@@ -108,8 +93,7 @@ def combinatorial_embedding_to_pos(embedding, fully_triangulate=False):
             left_t_child[vk] = None
 
     # 2. Phase: Set absolute positions
-    pos = {}
-    pos[v1] = (0, y_coordinate[v1])
+    pos = {v1: (0, y_coordinate[v1])}
     remaining_nodes = [v1]
     while remaining_nodes:
         parent_node = remaining_nodes.pop()
@@ -379,8 +363,7 @@ def triangulate_embedding(embedding, fully_triangulate=True):
     edges_visited = set()  # Used to keep track of already visited faces
     for v in embedding.nodes():
         for w in embedding.neighbors_cw_order(v):
-            new_face = make_bi_connected(embedding, v, w, edges_visited)
-            if new_face:
+            if new_face := make_bi_connected(embedding, v, w, edges_visited):
                 # Found a new face
                 face_list.append(new_face)
                 if len(new_face) > len(outer_face):

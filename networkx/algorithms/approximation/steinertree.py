@@ -214,5 +214,4 @@ def steiner_tree(G, terminal_nodes, weight="weight", method=None):
         edges = (
             (u, v, min(G[u][v], key=lambda k: G[u][v][k][weight])) for u, v in edges
         )
-    T = G.edge_subgraph(edges)
-    return T
+    return G.edge_subgraph(edges)

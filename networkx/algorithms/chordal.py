@@ -142,14 +142,12 @@ def find_induced_nodes(G, s, t, treewidth_bound=sys.maxsize):
     H = nx.Graph(G)
     H.add_edge(s, t)
     induced_nodes = set()
-    triplet = _find_chordality_breaker(H, s, treewidth_bound)
-    while triplet:
+    while triplet := _find_chordality_breaker(H, s, treewidth_bound):
         (u, v, w) = triplet
         induced_nodes.update(triplet)
         for n in triplet:
             if n != s:
                 H.add_edge(s, n)
-        triplet = _find_chordality_breaker(H, s, treewidth_bound)
     if induced_nodes:
         # Add t and the second node in the induced path from s to t.
         induced_nodes.add(t)
@@ -301,8 +299,7 @@ def _find_missing_edge(G):
     """Given a non-complete graph G, returns a missing edge."""
     nodes = set(G)
     for u in G:
-        missing = nodes - set(list(G[u].keys()) + [u])
-        if missing:
+        if missing := nodes - set(list(G[u].keys()) + [u]):
             return (u, missing.pop())
 
 

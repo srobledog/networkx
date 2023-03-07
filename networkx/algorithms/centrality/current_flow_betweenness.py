@@ -134,10 +134,7 @@ def approximate_current_flow_betweenness_centrality(
             for nbr in H[v]:
                 w = H[v][nbr].get(weight, 1.0)
                 betweenness[v] += w * np.abs(p[v] - p[nbr]) * cstar2k
-    if normalized:
-        factor = 1.0
-    else:
-        factor = nb / 2.0
+    factor = 1.0 if normalized else nb / 2.0
     # remap to original node names and "unnormalize" if required
     return {ordering[k]: v * factor for k, v in betweenness.items()}
 
@@ -229,10 +226,7 @@ def current_flow_betweenness_centrality(
         for i in range(n):
             betweenness[s] += (i - pos[i]) * row[i]
             betweenness[t] += (n - i - 1 - pos[i]) * row[i]
-    if normalized:
-        nb = (n - 1.0) * (n - 2.0)  # normalization factor
-    else:
-        nb = 2.0
+    nb = (n - 1.0) * (n - 2.0) if normalized else 2.0
     for v in H:
         betweenness[v] = float((betweenness[v] - v) * 2.0 / nb)
     return {ordering[k]: v for k, v in betweenness.items()}
@@ -327,10 +321,7 @@ def edge_current_flow_betweenness_centrality(
     H = nx.relabel_nodes(G, dict(zip(ordering, range(n))))
     edges = (tuple(sorted((u, v))) for u, v in H.edges())
     betweenness = dict.fromkeys(edges, 0.0)
-    if normalized:
-        nb = (n - 1.0) * (n - 2.0)  # normalization factor
-    else:
-        nb = 2.0
+    nb = (n - 1.0) * (n - 2.0) if normalized else 2.0
     for row, (e) in flow_matrix_row(H, weight=weight, dtype=dtype, solver=solver):
         pos = dict(zip(row.argsort()[::-1], range(1, n + 1)))
         for i in range(n):

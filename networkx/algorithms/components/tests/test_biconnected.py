@@ -152,7 +152,7 @@ def test_biconnected_davis():
     bcc = list(nx.biconnected_components(D))[0]
     assert set(D) == bcc  # All nodes in a giant bicomponent
     # So no articulation points
-    assert len(list(nx.articulation_points(D))) == 0
+    assert not list(nx.articulation_points(D))
 
 
 def test_biconnected_karate():
@@ -232,9 +232,9 @@ def test_biconnected_eppstein():
 def test_null_graph():
     G = nx.Graph()
     assert not nx.is_biconnected(G)
-    assert list(nx.biconnected_components(G)) == []
-    assert list(nx.biconnected_component_edges(G)) == []
-    assert list(nx.articulation_points(G)) == []
+    assert not list(nx.biconnected_components(G))
+    assert not list(nx.biconnected_component_edges(G))
+    assert not list(nx.articulation_points(G))
 
 
 def test_connected_raise():
