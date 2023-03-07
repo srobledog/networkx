@@ -174,7 +174,7 @@ def random_tournament(n, seed=None):
 
     """
     # Flip an unbiased coin for each pair of distinct nodes.
-    coins = (seed.random() for i in range((n * (n - 1)) // 2))
+    coins = (seed.random() for _ in range((n * (n - 1)) // 2))
     pairs = combinations(range(n), 2)
     edges = ((u, v) if r < 0.5 else (v, u) for (u, v), r in zip(pairs, coins))
     return nx.DiGraph(edges)

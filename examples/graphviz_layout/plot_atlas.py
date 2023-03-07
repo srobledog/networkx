@@ -28,10 +28,11 @@ def atlas6():
     U = nx.Graph()  # graph for union of all graphs in atlas
     for G in Atlas:
         # check if connected
-        if nx.number_connected_components(G) == 1:
-            # check if isomorphic to a previous graph
-            if not GraphMatcher(U, G).subgraph_is_isomorphic():
-                U = nx.disjoint_union(U, G)
+        if (
+            nx.number_connected_components(G) == 1
+            and not GraphMatcher(U, G).subgraph_is_isomorphic()
+        ):
+            U = nx.disjoint_union(U, G)
     return U
 
 

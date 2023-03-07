@@ -46,7 +46,7 @@ class TestAttractingComponents:
         assert len(ac) == 2
 
         ac = list(nx.attracting_components(self.G4))
-        assert ac == []
+        assert not ac
 
     def test_number_attacting_components(self):
         assert nx.number_attracting_components(self.G1) == 3

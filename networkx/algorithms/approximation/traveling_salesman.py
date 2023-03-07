@@ -291,10 +291,7 @@ def traveling_salesman_problem(G, weight="weight", nodes=None, cycle=True, metho
 
     """
     if method is None:
-        if G.is_directed():
-            method = asadpour_atsp
-        else:
-            method = christofides
+        method = asadpour_atsp if G.is_directed() else christofides
     if nodes is None:
         nodes = list(G.nodes)
 
@@ -1189,7 +1186,7 @@ def simulated_annealing_tsp(
     best_cost = cost
     while count <= max_iterations and temp > 0:
         count += 1
-        for i in range(N_inner):
+        for _ in range(N_inner):
             adj_sol = move(cycle, seed)
             adj_cost = sum(G[u][v].get(weight, 1) for u, v in pairwise(adj_sol))
             delta = adj_cost - cost
@@ -1413,7 +1410,7 @@ def threshold_accepting_tsp(
     while count <= max_iterations:
         count += 1
         accepted = False
-        for i in range(N_inner):
+        for _ in range(N_inner):
             adj_sol = move(cycle, seed)
             adj_cost = sum(G[u][v].get(weight, 1) for u, v in pairwise(adj_sol))
             delta = adj_cost - cost

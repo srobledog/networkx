@@ -113,10 +113,7 @@ def closeness_centrality(G, u=None, distance=None, wf_improved=True):
     else:
         path_length = nx.single_source_shortest_path_length
 
-    if u is None:
-        nodes = G.nodes
-    else:
-        nodes = [u]
+    nodes = G.nodes if u is None else [u]
     closeness_dict = {}
     for n in nodes:
         sp = path_length(G, n)
@@ -130,9 +127,7 @@ def closeness_centrality(G, u=None, distance=None, wf_improved=True):
                 s = (len(sp) - 1.0) / (len_G - 1)
                 _closeness_centrality *= s
         closeness_dict[n] = _closeness_centrality
-    if u is not None:
-        return closeness_dict[u]
-    return closeness_dict
+    return closeness_dict[u] if u is not None else closeness_dict
 
 
 @not_implemented_for("directed")

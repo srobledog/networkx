@@ -119,8 +119,7 @@ def _greedy_modularity_communities_generator(G, weight=None, resolution=1):
             negdq, u, v = H.pop()
         except IndexError:
             break
-        dq = -negdq
-        yield dq
+        yield -negdq
         # Remove best merge from row u heap
         dq_heap[u].pop()
         # Push new row max onto H
@@ -163,10 +162,7 @@ def _greedy_modularity_communities_generator(G, weight=None, resolution=1):
                 # Update dict for v,w only (u is removed below)
                 dq_dict[row][col] = dq_vw
                 # Save old max of per-row heap
-                if len(dq_heap_row) > 0:
-                    d_oldmax = dq_heap_row.heap[0]
-                else:
-                    d_oldmax = None
+                d_oldmax = dq_heap_row.heap[0] if len(dq_heap_row) > 0 else None
                 # Add/update heaps
                 d = (row, col)
                 d_negdq = -dq_vw

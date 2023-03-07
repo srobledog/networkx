@@ -201,10 +201,7 @@ def sets(G, top_nodes=None):
     color
 
     """
-    if G.is_directed():
-        is_connected = nx.is_weakly_connected
-    else:
-        is_connected = nx.is_connected
+    is_connected = nx.is_weakly_connected if G.is_directed() else nx.is_connected
     if top_nodes is not None:
         X = set(top_nodes)
         Y = set(G) - X
@@ -258,16 +255,11 @@ def density(B, nodes):
     """
     n = len(B)
     m = nx.number_of_edges(B)
+    if m == 0:
+        return 0.0
     nb = len(nodes)
     nt = n - nb
-    if m == 0:  # includes cases n==0 and n==1
-        d = 0.0
-    else:
-        if B.is_directed():
-            d = m / (2 * nb * nt)
-        else:
-            d = m / (nb * nt)
-    return d
+    return m / (2 * nb * nt) if B.is_directed() else m / (nb * nt)
 
 
 def degrees(B, nodes, weight=None):

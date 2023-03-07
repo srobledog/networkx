@@ -104,11 +104,9 @@ def minard_graph():
             x, y, p, r, n = line.split(",")
             G.pos[i] = (float(x), float(y))
             G.pop[i] = int(p)
-            if last is None:
-                last = i
-            else:
+            if last is not None:
                 G.add_edge(i, last, **{r: int(n)})
-                last = i
+            last = i
             i = i + 1
         g.append(G)
 

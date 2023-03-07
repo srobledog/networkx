@@ -12,7 +12,7 @@ def _is_valid_cut(G, set1, set2):
 
 def _cut_is_locally_optimal(G, cut_size, set1):
     # test if cut can be locally improved
-    for i, node in enumerate(set1):
+    for node in set1:
         cut_size_without_node = nx.algorithms.cut_size(
             G, set1 - {node}, weight="weight"
         )

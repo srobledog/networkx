@@ -15,16 +15,8 @@ def paper_1_case(float_edge_wt=False, explicit_node_wt=True, directed=False):
     limit = 3
 
     # configuration
-    if float_edge_wt:
-        shift = 0.001
-    else:
-        shift = 0
-
-    if directed:
-        example_1 = nx.DiGraph()
-    else:
-        example_1 = nx.Graph()
-
+    shift = 0.001 if float_edge_wt else 0
+    example_1 = nx.DiGraph() if directed else nx.Graph()
     # graph creation
     example_1.add_edge(1, 2, **{EWL: 3 + shift})
     example_1.add_edge(1, 4, **{EWL: 2 + shift})
@@ -38,13 +30,12 @@ def paper_1_case(float_edge_wt=False, explicit_node_wt=True, directed=False):
     else:
         wtu = None
 
-    # partitioning
-    clusters_1 = {
+    return {
         frozenset(x)
-        for x in lukes_partitioning(example_1, limit, node_weight=wtu, edge_weight=EWL)
+        for x in lukes_partitioning(
+            example_1, limit, node_weight=wtu, edge_weight=EWL
+        )
     }
-
-    return clusters_1
 
 
 # second test from the Lukes original paper
@@ -53,11 +44,7 @@ def paper_2_case(explicit_edge_wt=True, directed=False):
     byte_block_size = 32
 
     # configuration
-    if directed:
-        example_2 = nx.DiGraph()
-    else:
-        example_2 = nx.Graph()
-
+    example_2 = nx.DiGraph() if directed else nx.Graph()
     if explicit_edge_wt:
         edic = {EWL: 1}
         wtu = EWL
@@ -89,15 +76,12 @@ def paper_2_case(explicit_edge_wt=True, directed=False):
     example_2.nodes["no1"][NWL] = 1
     example_2.nodes["no2"][NWL] = 1
 
-    # partitioning
-    clusters_2 = {
+    return {
         frozenset(x)
         for x in lukes_partitioning(
             example_2, byte_block_size, node_weight=NWL, edge_weight=wtu
         )
     }
-
-    return clusters_2
 
 
 def test_paper_1_case():

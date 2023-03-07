@@ -30,11 +30,7 @@ class _DataEssentialsAndFunctions:
         self.edge_capacities = []  # edge capacities
         self.edge_weights = []  # edge weights
 
-        if not multigraph:
-            edges = G.edges(data=True)
-        else:
-            edges = G.edges(data=True, keys=True)
-
+        edges = G.edges(data=True, keys=True) if multigraph else G.edges(data=True)
         inf = float("inf")
         edges = (e for e in edges if e[0] != e[1] and e[-1].get(capacity, inf) != 0)
         for i, e in enumerate(edges):
@@ -513,10 +509,11 @@ def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
     for e, w in zip(DEAF.edge_indices, DEAF.edge_weights):
         if abs(w) == inf:
             raise nx.NetworkXError(f"edge {e!r} has infinite weight")
-    if not multigraph:
-        edges = nx.selfloop_edges(G, data=True)
-    else:
-        edges = nx.selfloop_edges(G, data=True, keys=True)
+    edges = (
+        nx.selfloop_edges(G, data=True, keys=True)
+        if multigraph
+        else nx.selfloop_edges(G, data=True)
+    )
     for e in edges:
         if abs(e[-1].get(weight, 0)) == inf:
             raise nx.NetworkXError(f"edge {e[:-1]!r} has infinite weight")
@@ -530,10 +527,11 @@ def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
     for e, c in zip(DEAF.edge_indices, DEAF.edge_capacities):
         if c < 0:
             raise nx.NetworkXUnfeasible(f"edge {e!r} has negative capacity")
-    if not multigraph:
-        edges = nx.selfloop_edges(G, data=True)
-    else:
-        edges = nx.selfloop_edges(G, data=True, keys=True)
+    edges = (
+        nx.selfloop_edges(G, data=True, keys=True)
+        if multigraph
+        else nx.selfloop_edges(G, data=True)
+    )
     for e in edges:
         if e[-1].get(capacity, inf) < 0:
             raise nx.NetworkXUnfeasible(f"edge {e[:-1]!r} has negative capacity")

@@ -507,13 +507,13 @@ def all_topological_sorts(G):
 
     # do-while construct
     while True:
-        assert all([count[v] == 0 for v in D])
+        assert all(count[v] == 0 for v in D)
 
         if len(current_sort) == len(G):
             yield list(current_sort)
 
             # clean-up stack
-            while len(current_sort) > 0:
+            while current_sort:
                 assert len(bases) == len(current_sort)
                 q = current_sort.pop()
 
@@ -562,7 +562,7 @@ def all_topological_sorts(G):
             if len(bases) < len(current_sort):
                 bases.append(q)
 
-        if len(bases) == 0:
+        if not bases:
             break
 
 
@@ -938,7 +938,7 @@ def antichains(G, topo_order=None):
         while stack:
             x = stack.pop()
             new_antichain = antichain + [x]
-            new_stack = [t for t in stack if not ((t in TC[x]) or (x in TC[t]))]
+            new_stack = [t for t in stack if t not in TC[x] and x not in TC[t]]
             antichains_stacks.append((new_antichain, new_stack))
 
 

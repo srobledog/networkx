@@ -77,8 +77,6 @@ def voronoi_cells(G, center_nodes, weight="weight"):
     # Get the mapping from center node to all nodes closer to it than to
     # any other center node.
     cells = groups(nearest)
-    # We collect all unreachable nodes under a special key, if there are any.
-    unreachable = set(G) - set(nearest)
-    if unreachable:
+    if unreachable := set(G) - set(nearest):
         cells["unreachable"] = unreachable
     return cells

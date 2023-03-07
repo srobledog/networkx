@@ -6,6 +6,7 @@ Properties
 Compute some network properties for the lollipop graph.
 """
 
+
 import matplotlib.pyplot as plt
 import networkx as nx
 
@@ -17,9 +18,7 @@ print("source vertex {target:length, }")
 for v in G.nodes():
     spl = dict(nx.single_source_shortest_path_length(G, v))
     print(f"{v} {spl} ")
-    for p in spl:
-        pathlengths.append(spl[p])
-
+    pathlengths.extend(iter(spl.values()))
 print()
 print(f"average shortest path length {sum(pathlengths) / len(pathlengths)}")
 

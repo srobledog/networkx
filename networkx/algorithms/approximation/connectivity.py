@@ -96,7 +96,7 @@ def local_node_connectivity(G, source, target, cutoff=None):
         cutoff = float("inf")
 
     exclude = set()
-    for i in range(min(possible, cutoff)):
+    for _ in range(min(possible, cutoff)):
         try:
             path = _bidirectional_shortest_path(G, source, target, exclude)
             exclude.update(set(path))
@@ -269,17 +269,9 @@ def all_pairs_node_connectivity(G, nbunch=None, cutoff=None):
         Node-Independent Paths. Santa Fe Institute Working Paper #01-07-035
         http://eclectic.ss.uci.edu/~drwhite/working.pdf
     """
-    if nbunch is None:
-        nbunch = G
-    else:
-        nbunch = set(nbunch)
-
+    nbunch = G if nbunch is None else set(nbunch)
     directed = G.is_directed()
-    if directed:
-        iter_func = itertools.permutations
-    else:
-        iter_func = itertools.combinations
-
+    iter_func = itertools.permutations if directed else itertools.combinations
     all_pairs = {n: {} for n in nbunch}
 
     for u, v in iter_func(nbunch, 2):

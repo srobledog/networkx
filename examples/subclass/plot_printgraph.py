@@ -49,7 +49,7 @@ class PrintGraph(Graph):
 
     def add_edges_from(self, ebunch, attr_dict=None, **attr):
         for e in ebunch:
-            u, v = e[0:2]
+            u, v = e[:2]
             self.add_edge(u, v, attr_dict=attr_dict, **attr)
 
     def remove_edge(self, u, v):
@@ -58,7 +58,7 @@ class PrintGraph(Graph):
 
     def remove_edges_from(self, ebunch):
         for e in ebunch:
-            u, v = e[0:2]
+            u, v = e[:2]
             self.remove_edge(u, v)
 
     def clear(self):
@@ -75,9 +75,9 @@ print("Nodes in G: ", G.nodes(data=True))
 G.add_edge(0, 1, weight=10)
 print("Edges in G: ", G.edges(data=True))
 G.remove_edge(0, 1)
-G.add_edges_from(zip(range(0, 3), range(1, 4)), weight=10)
+G.add_edges_from(zip(range(3), range(1, 4)), weight=10)
 print("Edges in G: ", G.edges(data=True))
-G.remove_edges_from(zip(range(0, 3), range(1, 4)))
+G.remove_edges_from(zip(range(3), range(1, 4)))
 print("Edges in G: ", G.edges(data=True))
 
 G = PrintGraph()

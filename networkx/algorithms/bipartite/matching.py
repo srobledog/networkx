@@ -140,16 +140,18 @@ def hopcroft_karp_matching(G, top_nodes=None):
         return distances[None] is not INFINITY
 
     def depth_first_search(v):
-        if v is not None:
-            for u in G[v]:
-                if distances[rightmatches[u]] == distances[v] + 1:
-                    if depth_first_search(rightmatches[u]):
-                        rightmatches[u] = v
-                        leftmatches[v] = u
-                        return True
-            distances[v] = INFINITY
-            return False
-        return True
+        if v is None:
+            return True
+
+        for u in G[v]:
+            if distances[rightmatches[u]] == distances[
+                v
+            ] + 1 and depth_first_search(rightmatches[u]):
+                rightmatches[u] = v
+                leftmatches[v] = u
+                return True
+        distances[v] = INFINITY
+        return False
 
     # Initialize the "global" variables that maintain state during the search.
     left, right = bipartite_sets(G, top_nodes)
@@ -163,9 +165,8 @@ def hopcroft_karp_matching(G, top_nodes=None):
     num_matched_pairs = 0
     while breadth_first_search():
         for v in left:
-            if leftmatches[v] is None:
-                if depth_first_search(v):
-                    num_matched_pairs += 1
+            if leftmatches[v] is None and depth_first_search(v):
+                num_matched_pairs += 1
 
     # Strip the entries matched to `None`.
     leftmatches = {k: v for k, v in leftmatches.items() if v is not None}
@@ -362,12 +363,14 @@ def _is_connected_by_alternating_path(G, v, matched_edges, unmatched_edges, targ
             valid_edges = matched_edges if depth % 2 else unmatched_edges
             try:
                 child = next(children)
-                if child not in visited:
-                    if (parent, child) in valid_edges or (child, parent) in valid_edges:
-                        if child in targets:
-                            return True
-                        visited.add(child)
-                        stack.append((child, iter(G[child]), depth + 1))
+                if child not in visited and (
+                    (parent, child) in valid_edges
+                    or (child, parent) in valid_edges
+                ):
+                    if child in targets:
+                        return True
+                    visited.add(child)
+                    stack.append((child, iter(G[child]), depth + 1))
             except StopIteration:
                 stack.pop()
         return False
@@ -581,5 +584,5 @@ def minimum_weight_full_matching(G, top_nodes=None, weight="weight"):
     d = {U[u]: V[v] for u, v in zip(*left_matches)}
     # d will contain the matching from edges in left to right; we need to
     # add the ones from right to left as well.
-    d.update({v: u for u, v in d.items()})
+    d |= {v: u for u, v in d.items()}
     return d

@@ -45,8 +45,7 @@ def degree_centrality(G):
         return {n: 1 for n in G}
 
     s = 1.0 / (len(G) - 1.0)
-    centrality = {n: d * s for n, d in G.degree()}
-    return centrality
+    return {n: d * s for n, d in G.degree()}
 
 
 @nx._dispatch
@@ -95,8 +94,7 @@ def in_degree_centrality(G):
         return {n: 1 for n in G}
 
     s = 1.0 / (len(G) - 1.0)
-    centrality = {n: d * s for n, d in G.in_degree()}
-    return centrality
+    return {n: d * s for n, d in G.in_degree()}
 
 
 @nx._dispatch
@@ -145,5 +143,4 @@ def out_degree_centrality(G):
         return {n: 1 for n in G}
 
     s = 1.0 / (len(G) - 1.0)
-    centrality = {n: d * s for n, d in G.out_degree()}
-    return centrality
+    return {n: d * s for n, d in G.out_degree()}

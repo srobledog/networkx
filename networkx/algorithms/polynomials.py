@@ -160,11 +160,14 @@ def tutte_polynomial(G):
         G = stack.pop()
         bridges = set(nx.bridges(G))
 
-        e = None
-        for i in G.edges:
-            if (i[0], i[1]) not in bridges and i[0] != i[1]:
-                e = i
-                break
+        e = next(
+            (
+                i
+                for i in G.edges
+                if (i[0], i[1]) not in bridges and i[0] != i[1]
+            ),
+            None,
+        )
         if not e:
             loops = list(nx.selfloop_edges(G, keys=True))
             polynomial += x ** len(bridges) * y ** len(loops)
@@ -289,10 +292,7 @@ def chromatic_polynomial(G):
     polynomial = 0
     while stack:
         G = stack.pop()
-        edges = list(G.edges)
-        if not edges:
-            polynomial += (-1) ** G.graph["contraction_idx"] * x ** len(G)
-        else:
+        if edges := list(G.edges):
             e = edges[0]
             C = nx.contracted_edge(G, e, self_loops=True)
             C.graph["contraction_idx"] = G.graph["contraction_idx"] + 1
@@ -300,4 +300,6 @@ def chromatic_polynomial(G):
             G.remove_edge(*e)
             stack.append(G)
             stack.append(C)
+        else:
+            polynomial += (-1) ** G.graph["contraction_idx"] * x ** len(G)
     return polynomial

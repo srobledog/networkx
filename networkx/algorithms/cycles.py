@@ -412,9 +412,7 @@ def find_cycle(G, source=None, orientation=None):
     elif orientation == "ignore":
 
         def tailhead(edge):
-            if edge[-1] == "reverse":
-                return edge[1], edge[0]
-            return edge[:2]
+            return (edge[1], edge[0]) if edge[-1] == "reverse" else edge[:2]
 
     explored = set()
     cycle = []
@@ -477,7 +475,7 @@ def find_cycle(G, source=None, orientation=None):
             explored.update(seen)
 
     else:
-        assert len(cycle) == 0
+        assert not cycle
         raise nx.exception.NetworkXNoCycle("No cycle found.")
 
     # We now have a list of edges which ends on a cycle.

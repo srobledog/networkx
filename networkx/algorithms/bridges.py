@@ -73,9 +73,11 @@ def bridges(G, root=None):
     if root is not None:
         H = H.subgraph(nx.node_connected_component(H, root)).copy()
     for u, v in H.edges():
-        if (u, v) not in chain_edges and (v, u) not in chain_edges:
-            if multigraph and len(G[u][v]) > 1:
-                continue
+        if (
+            (u, v) not in chain_edges
+            and (v, u) not in chain_edges
+            and (not multigraph or len(G[u][v]) <= 1)
+        ):
             yield u, v
 
 
@@ -191,9 +193,7 @@ def local_bridges(G, with_span=True, weight=None):
                 enodes = {u, v}
 
                 def hide_edge(n, nbr, d):
-                    if n not in enodes or nbr not in enodes:
-                        return wt(n, nbr, d)
-                    return None
+                    return wt(n, nbr, d) if n not in enodes or nbr not in enodes else None
 
                 try:
                     span = nx.shortest_path_length(G, u, v, weight=hide_edge)

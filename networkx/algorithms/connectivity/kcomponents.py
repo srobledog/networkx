@@ -138,8 +138,9 @@ def k_components(G, flow_func=None):
                 this_k = nx.node_connectivity(C, flow_func=flow_func)
                 if this_k > parent_k and this_k > 2:
                     k_components[this_k].append(set(C))
-                cuts = list(nx.all_node_cuts(C, k=this_k, flow_func=flow_func))
-                if cuts:
+                if cuts := list(
+                    nx.all_node_cuts(C, k=this_k, flow_func=flow_func)
+                ):
                     stack.append((this_k, _generate_partition(C, cuts, this_k)))
             except StopIteration:
                 stack.pop()
@@ -167,7 +168,7 @@ def _consolidate(sets, k):
 
     """
     G = nx.Graph()
-    nodes = {i: s for i, s in enumerate(sets)}
+    nodes = dict(enumerate(sets))
     G.add_nodes_from(nodes)
     G.add_edges_from(
         (u, v) for u, v in combinations(nodes, 2) if len(nodes[u] & nodes[v]) >= k
@@ -204,8 +205,9 @@ def _reconstruct_k_components(k_comps):
             result[k] = list(_consolidate(result[k + 1], k))
         else:
             nodes_at_k = set.union(*k_comps[k])
-            to_add = [c for c in result[k + 1] if any(n not in nodes_at_k for n in c)]
-            if to_add:
+            if to_add := [
+                c for c in result[k + 1] if any(n not in nodes_at_k for n in c)
+            ]:
                 result[k] = list(_consolidate(k_comps[k] + to_add, k))
             else:
                 result[k] = list(_consolidate(k_comps[k], k))

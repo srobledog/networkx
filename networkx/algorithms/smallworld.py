@@ -80,7 +80,7 @@ def random_reference(G, niter=1, connectivity=True, seed=None):
     ntries = int(nnodes * nedges / (nnodes * (nnodes - 1) / 2))
     swapcount = 0
 
-    for i in range(niter):
+    for _ in range(niter):
         n = 0
         while n < ntries:
             # pick two random edges without creating edge list
@@ -218,23 +218,24 @@ def lattice_reference(G, niter=5, D=None, connectivity=True, seed=None):
                 continue  # all vertices should be different
 
             # don't create parallel edges
-            if (d not in G[a]) and (b not in G[c]):
-                if D[ai, bi] + D[ci, di] >= D[ai, ci] + D[bi, di]:
-                    # only swap if we get closer to the diagonal
-                    G.add_edge(a, d)
-                    G.add_edge(c, b)
-                    G.remove_edge(a, b)
-                    G.remove_edge(c, d)
+            if (
+                (d not in G[a])
+                and (b not in G[c])
+                and D[ai, bi] + D[ci, di] >= D[ai, ci] + D[bi, di]
+            ):
+                # only swap if we get closer to the diagonal
+                G.add_edge(a, d)
+                G.add_edge(c, b)
+                G.remove_edge(a, b)
+                G.remove_edge(c, d)
 
-                    # Check if the graph is still connected
-                    if connectivity and local_conn(G, a, b) == 0:
-                        # Not connected, revert the swap
-                        G.remove_edge(a, d)
-                        G.remove_edge(c, b)
-                        G.add_edge(a, b)
-                        G.add_edge(c, d)
-                    else:
-                        break
+                if not connectivity or local_conn(G, a, b) != 0:
+                    break
+                # Not connected, revert the swap
+                G.remove_edge(a, d)
+                G.remove_edge(c, b)
+                G.add_edge(a, b)
+                G.add_edge(c, d)
             n += 1
 
     return G
@@ -293,7 +294,7 @@ def sigma(G, niter=100, nrand=10, seed=None):
     # Compute the mean clustering coefficient and average shortest path length
     # for an equivalent random graph
     randMetrics = {"C": [], "L": []}
-    for i in range(nrand):
+    for _ in range(nrand):
         Gr = random_reference(G, niter=niter, seed=seed)
         randMetrics["C"].append(nx.transitivity(Gr))
         randMetrics["L"].append(nx.average_shortest_path_length(Gr))
@@ -303,9 +304,7 @@ def sigma(G, niter=100, nrand=10, seed=None):
     Cr = np.mean(randMetrics["C"])
     Lr = np.mean(randMetrics["L"])
 
-    sigma = (C / Cr) / (L / Lr)
-
-    return sigma
+    return (C / Cr) / (L / Lr)
 
 
 @py_random_state(3)
@@ -394,6 +393,4 @@ def omega(G, niter=5, nrand=10, seed=None):
     L = nx.average_shortest_path_length(G)
     Lr = np.mean(randMetrics["L"])
 
-    omega = (Lr / L) - (C / Cl)
-
-    return omega
+    return (Lr / L) - (C / Cl)

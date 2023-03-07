@@ -21,11 +21,7 @@ def shortest_augmenting_path_impl(G, s, t, capacity, residual, two_phase, cutoff
     if s == t:
         raise nx.NetworkXError("source and sink are the same node")
 
-    if residual is None:
-        R = build_residual_network(G, capacity)
-    else:
-        R = residual
-
+    R = build_residual_network(G, capacity) if residual is None else residual
     R_nodes = R.nodes
     R_pred = R.pred
     R_succ = R.succ
@@ -104,7 +100,7 @@ def shortest_augmenting_path_impl(G, s, t, capacity, residual, two_phase, cutoff
     flow_value = 0
     path = [s]
     u = s
-    d = n if not two_phase else int(min(m**0.5, 2 * n ** (2.0 / 3)))
+    d = int(min(m**0.5, 2 * n ** (2.0 / 3))) if two_phase else n
     done = R_nodes[s]["height"] >= d
     while not done:
         height = R_nodes[u]["height"]

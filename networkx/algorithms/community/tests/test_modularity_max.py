@@ -97,11 +97,7 @@ def test_greedy_modularity_communities_directed():
 def test_modularity_communities_weighted(func):
     G = nx.balanced_tree(2, 3)
     for a, b in G.edges:
-        if ((a == 1) or (a == 2)) and (b != 0):
-            G[a][b]["weight"] = 10.0
-        else:
-            G[a][b]["weight"] = 1.0
-
+        G[a][b]["weight"] = 10.0 if a in [1, 2] and b != 0 else 1.0
     expected = [{0, 1, 3, 4, 7, 8, 9, 10}, {2, 5, 6, 11, 12, 13, 14}]
 
     assert func(G, weight="weight") == expected
@@ -310,7 +306,7 @@ def test_cutoff_parameter():
     assert greedy_modularity_communities(G, cutoff=4) == expected
 
     # Default aggregation case (here, 2 communities emerge)
-    expected = [frozenset(range(0, 4)), frozenset(range(4, 8))]
+    expected = [frozenset(range(4)), frozenset(range(4, 8))]
     assert greedy_modularity_communities(G, cutoff=1) == expected
 
 
@@ -329,5 +325,5 @@ def test_best_n():
 
     # Two additional merging steps:
     best_n = 1
-    expected = [frozenset(range(0, 13))]
+    expected = [frozenset(range(13))]
     assert greedy_modularity_communities(G, best_n=best_n) == expected

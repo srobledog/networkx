@@ -76,8 +76,8 @@ def newman_betweenness_centrality(G, v=None, cutoff=None, normalized=True, weigh
             if order <= 2:
                 return betweenness  # no normalization b=0 for all nodes
             scale = 1.0 / ((order - 1) * (order - 2))
-            for v in betweenness:
-                betweenness[v] *= scale
+            for value in betweenness.values():
+                value *= scale
     return betweenness  # all nodes
 
 
@@ -119,16 +119,16 @@ def _node_betweenness(G, source, cutoff=False, normalized=True, weight=None):
                     break  # also have pred[v]==[source]
                 between[x] += between[v] / num_paths
     #  remove source
-    for v in between:
-        between[v] -= 1
+    for value in between.values():
+        value -= 1
     # rescale to be between 0 and 1
     if normalized:
         l = len(between)
         if l > 2:
             # scale by 1/the number of possible paths
             scale = 1 / ((l - 1) * (l - 2))
-            for v in between:
-                between[v] *= scale
+            for value_ in between.values():
+                value_ *= scale
     return between
 
 

@@ -247,7 +247,7 @@ class TestMinCostFlow:
 
         "PS.ex.7.1: testing main function"
         sol = nx.max_flow_min_cost(G, "s", "t", capacity=0, weight=1)
-        flow = sum(v for v in sol["s"].values())
+        flow = sum(sol["s"].values())
         assert 4 == flow
         assert 23 == nx.cost_of_flow(G, sol, weight=1)
         assert sol["s"] == {"a": 2, "b": 2}
@@ -259,7 +259,7 @@ class TestMinCostFlow:
         G["t"]["s"].update({1: -100})
         flowCost, sol = nx.capacity_scaling(G, capacity=0, weight=1)
         G.remove_edge("t", "s")
-        flow = sum(v for v in sol["s"].values())
+        flow = sum(sol["s"].values())
         assert 4 == flow
         assert sol["t"]["s"] == 4
         assert flowCost == -377

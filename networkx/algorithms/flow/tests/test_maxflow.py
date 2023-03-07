@@ -483,7 +483,7 @@ class TestMaxFlowMinCutInterface:
                     f"Assertion failed in function: {flow_func.__name__} "
                     f"in interface {interface_func.__name__}"
                 )
-                for i in range(3):
+                for _ in range(3):
                     result = interface_func(
                         G, "x", "y", flow_func=flow_func, residual=R
                     )

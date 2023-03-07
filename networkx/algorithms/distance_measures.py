@@ -105,10 +105,7 @@ def _extrema_bounding(G, compute="diameter", weight=None):
 
     # repeat the following until there are no more candidates
     while candidates:
-        if high:
-            current = maxuppernode  # select node with largest upper bound
-        else:
-            current = minlowernode  # select node with smallest lower bound
+        current = maxuppernode if high else minlowernode
         high = not high
 
         # get distances from/to current node and derive eccentricity
@@ -210,7 +207,7 @@ def _extrema_bounding(G, compute="diameter", weight=None):
             ):
                 maxuppernode = i
 
-        # print status update
+            # print status update
     #        print (" min=" + str(minlower) + "/" + str(minupper) +
     #        " max=" + str(maxlower) + "/" + str(maxupper) +
     #        " candidates: " + str(len(candidates)))
@@ -225,14 +222,10 @@ def _extrema_bounding(G, compute="diameter", weight=None):
     if compute == "radius":
         return minupper
     if compute == "periphery":
-        p = [v for v in G if ecc_lower[v] == maxlower]
-        return p
+        return [v for v in G if ecc_lower[v] == maxlower]
     if compute == "center":
-        c = [v for v in G if ecc_upper[v] == minupper]
-        return c
-    if compute == "eccentricities":
-        return ecc_lower
-    return None
+        return [v for v in G if ecc_upper[v] == minupper]
+    return ecc_lower if compute == "eccentricities" else None
 
 
 def eccentricity(G, v=None, sp=None, weight=None):
@@ -318,9 +311,7 @@ def eccentricity(G, v=None, sp=None, weight=None):
 
         e[n] = max(length.values())
 
-    if v in G:
-        return e[v]  # return single value
-    return e
+    return e[v] if v in G else e
 
 
 def diameter(G, e=None, usebounds=False, weight=None):
@@ -432,8 +423,7 @@ def periphery(G, e=None, usebounds=False, weight=None):
     if e is None:
         e = eccentricity(G, weight=weight)
     diameter = max(e.values())
-    p = [v for v in e if e[v] == diameter]
-    return p
+    return [v for v in e if e[v] == diameter]
 
 
 def radius(G, e=None, usebounds=False, weight=None):
@@ -542,8 +532,7 @@ def center(G, e=None, usebounds=False, weight=None):
     if e is None:
         e = eccentricity(G, weight=weight)
     radius = min(e.values())
-    p = [v for v in e if e[v] == radius]
-    return p
+    return [v for v in e if e[v] == radius]
 
 
 def barycenter(G, weight=None, attr=None, sp=None):
@@ -760,6 +749,4 @@ def resistance_distance(G, nodeA, nodeB, weight=None, invert_weight=True):
 
     # Calculate the ratio of determinant, rd = det(L_ab)/det(L_a)
     Ldet = np.product(np.divide(np.append(LdiagAB, [1]), LdiagA))
-    rd = Ldet * LdiagAB_s / LdiagA_s
-
-    return rd
+    return Ldet * LdiagAB_s / LdiagA_s

@@ -92,18 +92,11 @@ def _find_path_start(G):
     if is_eulerian(G):
         return arbitrary_element(G)
 
-    if G.is_directed():
-        v1, v2 = (v for v in G if G.in_degree(v) != G.out_degree(v))
+    if not G.is_directed():
+        return [v for v in G if G.degree(v) % 2 != 0][0]
+    v1, v2 = (v for v in G if G.in_degree(v) != G.out_degree(v))
         # Determines which is the 'start' node (as opposed to the 'end')
-        if G.out_degree(v1) > G.in_degree(v1):
-            return v1
-        else:
-            return v2
-
-    else:
-        # In an undirected graph randomly choose one of the possibilities
-        start = [v for v in G if G.degree(v) % 2 != 0][0]
-        return start
+    return v1 if G.out_degree(v1) > G.in_degree(v1) else v2
 
 
 def _simplegraph_eulerian_circuit(G, source):
@@ -216,10 +209,7 @@ def eulerian_circuit(G, source=None, keys=False):
     """
     if not is_eulerian(G):
         raise nx.NetworkXError("G is not Eulerian.")
-    if G.is_directed():
-        G = G.reverse()
-    else:
-        G = G.copy()
+    G = G.reverse() if G.is_directed() else G.copy()
     if source is None:
         source = arbitrary_element(G)
     if G.is_multigraph():
@@ -297,33 +287,33 @@ def has_eulerian_path(G, source=None):
     if nx.is_eulerian(G):
         return True
 
-    if G.is_directed():
-        ins = G.in_degree
-        outs = G.out_degree
-        # Since we know it is not eulerian, outs - ins must be 1 for source
-        if source is not None and outs[source] - ins[source] != 1:
-            return False
-
-        unbalanced_ins = 0
-        unbalanced_outs = 0
-        for v in G:
-            if ins[v] - outs[v] == 1:
-                unbalanced_ins += 1
-            elif outs[v] - ins[v] == 1:
-                unbalanced_outs += 1
-            elif ins[v] != outs[v]:
-                return False
-
-        return (
-            unbalanced_ins <= 1 and unbalanced_outs <= 1 and nx.is_weakly_connected(G)
-        )
-    else:
+    if not G.is_directed():
         # We know it is not eulerian, so degree of source must be odd.
-        if source is not None and G.degree[source] % 2 != 1:
+        return (
+            False
+            if source is not None and G.degree[source] % 2 != 1
+            else sum(d % 2 == 1 for v, d in G.degree()) == 2
+            and nx.is_connected(G)
+        )
+    ins = G.in_degree
+    outs = G.out_degree
+    # Since we know it is not eulerian, outs - ins must be 1 for source
+    if source is not None and outs[source] - ins[source] != 1:
+        return False
+
+    unbalanced_ins = 0
+    unbalanced_outs = 0
+    for v in G:
+        if ins[v] - outs[v] == 1:
+            unbalanced_ins += 1
+        elif outs[v] - ins[v] == 1:
+            unbalanced_outs += 1
+        elif ins[v] != outs[v]:
             return False
 
-        # Sum is 2 since we know it is not eulerian (which implies sum is 0)
-        return sum(d % 2 == 1 for v, d in G.degree()) == 2 and nx.is_connected(G)
+    return (
+        unbalanced_ins <= 1 and unbalanced_outs <= 1 and nx.is_weakly_connected(G)
+    )
 
 
 def eulerian_path(G, source=None, keys=False):
@@ -428,7 +418,7 @@ def eulerize(G):
         raise nx.NetworkXError("G is not connected")
     odd_degree_nodes = [n for n, d in G.degree() if d % 2 == 1]
     G = nx.MultiGraph(G)
-    if len(odd_degree_nodes) == 0:
+    if not odd_degree_nodes:
         return G
 
     # get all shortest paths between vertices of odd degree

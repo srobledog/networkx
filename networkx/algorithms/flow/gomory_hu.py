@@ -136,21 +136,15 @@ def gomory_hu_tree(G, capacity="capacity", flow_func=None):
         msg = "Empty Graph does not have a Gomory-Hu tree representation"
         raise nx.NetworkXError(msg)
 
-    # Start the tree as a star graph with an arbitrary node at the center
-    tree = {}
     labels = {}
     iter_nodes = iter(G)
     root = next(iter_nodes)
-    for n in iter_nodes:
-        tree[n] = root
-
+    tree = {n: root for n in iter_nodes}
     # Reuse residual network
     R = build_residual_network(G, capacity)
 
     # For all the leaves in the star graph tree (that is n-1 nodes).
-    for source in tree:
-        # Find neighbor in the tree
-        target = tree[source]
+    for source, target in tree.items():
         # compute minimum cut
         cut_value, partition = nx.minimum_cut(
             G, source, target, capacity=capacity, flow_func=flow_func, residual=R

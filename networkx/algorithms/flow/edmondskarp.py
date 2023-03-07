@@ -100,11 +100,7 @@ def edmonds_karp_impl(G, s, t, capacity, residual, cutoff):
     if s == t:
         raise nx.NetworkXError("source and sink are the same node")
 
-    if residual is None:
-        R = build_residual_network(G, capacity)
-    else:
-        R = residual
-
+    R = build_residual_network(G, capacity) if residual is None else residual
     # Initialize/reset the residual network.
     for u in R:
         for e in R[u].values():

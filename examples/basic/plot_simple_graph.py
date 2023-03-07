@@ -6,6 +6,7 @@ Simple graph
 Draw simple graph with manual layout.
 """
 
+
 import networkx as nx
 import matplotlib.pyplot as plt
 
@@ -46,11 +47,11 @@ left_nodes = [0, 1, 2]
 middle_nodes = [3, 4]
 right_nodes = [5, 6]
 
-# set the position according to column (x-coord)
-pos = {n: (0, i) for i, n in enumerate(left_nodes)}
-pos.update({n: (1, i + 0.5) for i, n in enumerate(middle_nodes)})
-pos.update({n: (2, i + 0.5) for i, n in enumerate(right_nodes)})
-
+pos = (
+    {n: (0, i) for i, n in enumerate(left_nodes)}
+    | {n: (1, i + 0.5) for i, n in enumerate(middle_nodes)}
+    | {n: (2, i + 0.5) for i, n in enumerate(right_nodes)}
+)
 nx.draw_networkx(G, pos, **options)
 
 # Set margins for the axes so that nodes aren't clipped

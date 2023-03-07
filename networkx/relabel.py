@@ -118,10 +118,7 @@ def relabel_nodes(G, mapping, copy=True):
     # e.g. str(old_label) -> new_label, but we'll just make a dictionary here regardless
     m = {n: mapping(n) for n in G} if callable(mapping) else mapping
 
-    if copy:
-        return _relabel_copy(G, m)
-    else:
-        return _relabel_inplace(G, m)
+    return _relabel_copy(G, m) if copy else _relabel_inplace(G, m)
 
 
 def _relabel_inplace(G, mapping):
@@ -167,7 +164,7 @@ def _relabel_inplace(G, mapping):
             seen = set()
             for i, (source, target, key, data) in enumerate(new_edges):
                 if target in G[source] and key in G[source][target]:
-                    new_key = 0 if not isinstance(key, (int, float)) else key
+                    new_key = key if isinstance(key, (int, float)) else 0
                     while new_key in G[source][target] or (target, new_key) in seen:
                         new_key += 1
                     new_edges[i] = (source, target, new_key, data)

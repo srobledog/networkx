@@ -83,9 +83,7 @@ nx.draw_networkx_edge_labels(G, pos, edge_labels=elabels)
 def morse_encode(letter):
     pred = next(G.predecessors(letter))  # Each letter has only 1 predecessor
     symbol = G[pred][letter]["char"]
-    if pred != "":
-        return morse_encode(pred) + symbol  # Traversing the trie in reverse
-    return symbol
+    return morse_encode(pred) + symbol if pred != "" else symbol
 
 
 # Verify that the trie encoding is correct

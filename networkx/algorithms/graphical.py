@@ -148,7 +148,7 @@ def is_valid_degree_sequence_havel_hakimi(deg_sequence):
         # Reduce the next dmax largest stubs
         mslen = 0
         k = dmax
-        for i in range(dmax):
+        for _ in range(k):
             while num_degs[k] == 0:
                 k -= 1
             num_degs[k], n = num_degs[k] - 1, n - 1
@@ -271,9 +271,7 @@ def is_multigraphical(sequence):
         if d < 0:
             return False
         dsum, dmax = dsum + d, max(dmax, d)
-    if dsum % 2 or dsum < 2 * dmax:
-        return False
-    return True
+    return not dsum % 2 and dsum >= 2 * dmax
 
 
 def is_pseudographical(sequence):
@@ -380,7 +378,7 @@ def is_digraphical(in_sequence, out_sequence):
 
         # Attach out stubs to the nodes with the most in stubs
         mslen = 0
-        for i in range(freein):
+        for _ in range(freein):
             if zeroheap and (not stubheap or stubheap[0][0] > zeroheap[0]):
                 stubout = heapq.heappop(zeroheap)
                 stubin = 0
@@ -389,7 +387,7 @@ def is_digraphical(in_sequence, out_sequence):
             if stubout == 0:
                 return False
             # Check if target is now totally connected
-            if stubout + 1 < 0 or stubin < 0:
+            if stubout < -1 or stubin < 0:
                 modstubs[mslen] = (stubout + 1, stubin)
                 mslen += 1
 

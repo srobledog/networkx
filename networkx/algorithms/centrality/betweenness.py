@@ -121,10 +121,7 @@ def betweenness_centrality(
        https://doi.org/10.2307/3033543
     """
     betweenness = dict.fromkeys(G, 0.0)  # b[v]=0 for v in G
-    if k is None:
-        nodes = G
-    else:
-        nodes = seed.sample(list(G.nodes()), k)
+    nodes = G if k is None else seed.sample(list(G.nodes()), k)
     for s in nodes:
         # single source shortest paths
         if weight is None:  # use BFS
@@ -221,10 +218,7 @@ def edge_betweenness_centrality(G, k=None, normalized=True, weight=None, seed=No
     betweenness = dict.fromkeys(G, 0.0)  # b[v]=0 for v in G
     # b[e]=0 for e in G.edges()
     betweenness.update(dict.fromkeys(G.edges(), 0.0))
-    if k is None:
-        nodes = G
-    else:
-        nodes = seed.sample(list(G.nodes()), k)
+    nodes = G if k is None else seed.sample(list(G.nodes()), k)
     for s in nodes:
         # single source shortest paths
         if weight is None:  # use BFS
@@ -249,13 +243,10 @@ def edge_betweenness_centrality(G, k=None, normalized=True, weight=None, seed=No
 
 def _single_source_shortest_path_basic(G, s):
     S = []
-    P = {}
-    for v in G:
-        P[v] = []
+    P = {v: [] for v in G}
     sigma = dict.fromkeys(G, 0.0)  # sigma[v]=0 for v in G
-    D = {}
     sigma[s] = 1.0
-    D[s] = 0
+    D = {s: 0}
     Q = deque([s])
     while Q:  # use BFS to find shortest paths
         v = Q.popleft()
@@ -276,9 +267,7 @@ def _single_source_dijkstra_path_basic(G, s, weight):
     weight = _weight_function(G, weight)
     # modified from Eppstein
     S = []
-    P = {}
-    for v in G:
-        P[v] = []
+    P = {v: [] for v in G}
     sigma = dict.fromkeys(G, 0.0)  # sigma[v]=0 for v in G
     D = {}
     sigma[s] = 1.0
@@ -352,21 +341,15 @@ def _accumulate_edges(betweenness, S, P, sigma, s):
 
 def _rescale(betweenness, n, normalized, directed=False, k=None, endpoints=False):
     if normalized:
-        if endpoints:
-            if n < 2:
-                scale = None  # no normalization
-            else:
-                # Scale factor should include endpoint nodes
-                scale = 1 / (n * (n - 1))
-        elif n <= 2:
-            scale = None  # no normalization b=0 for all nodes
+        if endpoints and n < 2 or not endpoints and n <= 2:
+            scale = None  # no normalization
+        elif endpoints:
+            # Scale factor should include endpoint nodes
+            scale = 1 / (n * (n - 1))
         else:
             scale = 1 / ((n - 1) * (n - 2))
     else:  # rescale by 2 for undirected graphs
-        if not directed:
-            scale = 0.5
-        else:
-            scale = None
+        scale = None if directed else 0.5
     if scale is not None:
         if k is not None:
             scale = scale * n / k
@@ -376,16 +359,12 @@ def _rescale(betweenness, n, normalized, directed=False, k=None, endpoints=False
 
 
 def _rescale_e(betweenness, n, normalized, directed=False, k=None):
-    if normalized:
-        if n <= 1:
-            scale = None  # no normalization b=0 for all nodes
-        else:
-            scale = 1 / (n * (n - 1))
-    else:  # rescale by 2 for undirected graphs
-        if not directed:
-            scale = 0.5
-        else:
-            scale = None
+    if normalized and n <= 1 or not normalized and directed:
+        scale = None  # no normalization b=0 for all nodes
+    elif normalized:
+        scale = 1 / (n * (n - 1))
+    else:
+        scale = 0.5
     if scale is not None:
         if k is not None:
             scale = scale * n / k

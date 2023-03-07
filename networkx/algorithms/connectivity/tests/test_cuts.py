@@ -23,19 +23,18 @@ def _generate_no_biconnected(max_attempts=50):
         if nx.is_connected(G) and not nx.is_biconnected(G):
             attempts = 0
             yield G
+        elif attempts >= max_attempts:
+            msg = f"Tried {attempts} times: no suitable Graph."
+            raise Exception(msg)
         else:
-            if attempts >= max_attempts:
-                msg = f"Tried {attempts} times: no suitable Graph."
-                raise Exception(msg)
-            else:
-                attempts += 1
+            attempts += 1
 
 
 def test_articulation_points():
     Ggen = _generate_no_biconnected()
     for flow_func in flow_funcs:
         errmsg = f"Assertion failed in function: {flow_func.__name__}"
-        for i in range(1):  # change 1 to 3 or more for more realizations.
+        for _ in range(1):
             G = next(Ggen)
             cut = nx.minimum_node_cut(G, flow_func=flow_func)
             assert len(cut) == 1, errmsg
@@ -187,7 +186,7 @@ def test_node_cutset_exception():
 def test_node_cutset_random_graphs():
     for flow_func in flow_funcs:
         errmsg = f"Assertion failed in function: {flow_func.__name__}"
-        for i in range(3):
+        for _ in range(3):
             G = nx.fast_gnp_random_graph(50, 0.25, seed=42)
             if not nx.is_connected(G):
                 ccs = iter(nx.connected_components(G))
@@ -202,7 +201,7 @@ def test_node_cutset_random_graphs():
 def test_edge_cutset_random_graphs():
     for flow_func in flow_funcs:
         errmsg = f"Assertion failed in function: {flow_func.__name__}"
-        for i in range(3):
+        for _ in range(3):
             G = nx.fast_gnp_random_graph(50, 0.25, seed=42)
             if not nx.is_connected(G):
                 ccs = iter(nx.connected_components(G))

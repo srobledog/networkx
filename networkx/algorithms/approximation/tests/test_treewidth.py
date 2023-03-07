@@ -14,28 +14,17 @@ from networkx.algorithms.approximation.treewidth import (
 def is_tree_decomp(graph, decomp):
     """Check if the given tree decomposition is valid."""
     for x in graph.nodes():
-        appear_once = False
-        for bag in decomp.nodes():
-            if x in bag:
-                appear_once = True
-                break
+        appear_once = any(x in bag for bag in decomp.nodes())
         assert appear_once
 
     # Check if each connected pair of nodes are at least once together in a bag
     for x, y in graph.edges():
-        appear_together = False
-        for bag in decomp.nodes():
-            if x in bag and y in bag:
-                appear_together = True
-                break
+        appear_together = any(x in bag and y in bag for bag in decomp.nodes())
         assert appear_together
 
     # Check if the nodes associated with vertex v form a connected subset of T
     for v in graph.nodes():
-        subset = []
-        for bag in decomp.nodes():
-            if v in bag:
-                subset.append(bag)
+        subset = [bag for bag in decomp.nodes() if v in bag]
         sub_graph = decomp.subgraph(subset)
         assert nx.is_connected(sub_graph)
 
@@ -121,9 +110,7 @@ class TestTreewidthMinDegree:
 
         deg_heuristic = MinDegreeHeuristic(graph)
         node = deg_heuristic.best_node(graph)
-        if node is None:
-            pass
-        else:
+        if node is not None:
             assert False
 
     def test_empty_graph(self):
@@ -229,9 +216,7 @@ class TestTreewidthMinFillIn:
                 if u != v:  # ignore self-loop
                     graph[u].add(v)
         next_node = min_fill_in_heuristic(graph)
-        if next_node is None:
-            pass
-        else:
+        if next_node is not None:
             assert False
 
     def test_empty_graph(self):

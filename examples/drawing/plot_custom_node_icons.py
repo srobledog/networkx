@@ -8,6 +8,7 @@ Example of using custom icons to represent nodes with matplotlib.
 Images for node icons courtesy of www.materialui.co
 """
 
+
 import matplotlib.pyplot as plt
 import networkx as nx
 import PIL
@@ -29,14 +30,14 @@ G.add_node("router", image=images["router"])
 for i in range(1, 4):
     G.add_node(f"switch_{i}", image=images["switch"])
     for j in range(1, 4):
-        G.add_node("PC_" + str(i) + "_" + str(j), image=images["PC"])
+        G.add_node(f"PC_{str(i)}_{str(j)}", image=images["PC"])
 
 G.add_edge("router", "switch_1")
 G.add_edge("router", "switch_2")
 G.add_edge("router", "switch_3")
 for u in range(1, 4):
     for v in range(1, 4):
-        G.add_edge("switch_" + str(u), "PC_" + str(u) + "_" + str(v))
+        G.add_edge(f"switch_{str(u)}", f"PC_{str(u)}_{str(v)}")
 
 # Get a reproducible layout and create figure
 pos = nx.spring_layout(G, seed=1734289230)

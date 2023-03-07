@@ -52,14 +52,11 @@ def chess_pgn_graph(pgn_file="chess_masters_WCC.pgn.bz2"):
         if line.startswith("["):
             tag, value = line[1:-1].split(" ", 1)
             game[str(tag)] = value.strip('"')
-        else:
-            # empty line after tag set indicates
-            # we finished reading game info
-            if game:
-                white = game.pop("White")
-                black = game.pop("Black")
-                G.add_edge(white, black, **game)
-                game = {}
+        elif game:
+            white = game.pop("White")
+            black = game.pop("Black")
+            G.add_edge(white, black, **game)
+            game = {}
     return G
 
 

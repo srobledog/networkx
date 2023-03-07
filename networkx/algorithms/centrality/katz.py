@@ -150,12 +150,7 @@ def katz_centrality(
 
     nnodes = G.number_of_nodes()
 
-    if nstart is None:
-        # choose starting vector with entries of 0
-        x = {n: 0 for n in G}
-    else:
-        x = nstart
-
+    x = {n: 0 for n in G} if nstart is None else nstart
     try:
         b = dict.fromkeys(G, float(beta))
     except (TypeError, ValueError, AttributeError) as err:

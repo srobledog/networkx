@@ -63,11 +63,9 @@ def dispersion(G, u=None, v=None, normalized=True, alpha=1.0, b=0.0, c=0.0):
             # neighbors of s that are in G_u, not including u and v
             nbrs_s = u_nbrs.intersection(G_u[s]) - set_uv
             # s and t are not directly connected
-            if t not in nbrs_s:
-                # s and t do not share a connection
-                if nbrs_s.isdisjoint(G_u[t]):
-                    # tick for disp(u, v)
-                    total += 1
+            if t not in nbrs_s and nbrs_s.isdisjoint(G_u[t]):
+                # tick for disp(u, v)
+                total += 1
         # neighbors that u and v share
         embededness = len(ST)
 

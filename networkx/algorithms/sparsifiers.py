@@ -83,12 +83,11 @@ def spanner(G, stretch, weight=None, seed=None):
 
     i = 0
     while i < k - 1:
-        # step 1: sample centers
-        sampled_centers = set()
-        for center in set(clustering.values()):
-            if seed.random() < sample_prob:
-                sampled_centers.add(center)
-
+        sampled_centers = {
+            center
+            for center in set(clustering.values())
+            if seed.random() < sample_prob
+        }
         # combined loop for steps 2 and 3
         edges_to_add = set()
         edges_to_remove = set()
@@ -102,20 +101,9 @@ def spanner(G, stretch, weight=None, seed=None):
             lightest_edge_neighbor, lightest_edge_weight = _lightest_edge_dicts(
                 residual_graph, clustering, v
             )
-            neighboring_sampled_centers = (
+            if neighboring_sampled_centers := (
                 set(lightest_edge_weight.keys()) & sampled_centers
-            )
-
-            # step 3: add edges to spanner
-            if not neighboring_sampled_centers:
-                # connect to each neighboring center via lightest edge
-                for neighbor in lightest_edge_neighbor.values():
-                    edges_to_add.add((v, neighbor))
-                # remove all incident edges
-                for neighbor in residual_graph.adj[v]:
-                    edges_to_remove.add((v, neighbor))
-
-            else:  # there is a neighboring sampled center
+            ):
                 closest_center = min(
                     neighboring_sampled_centers, key=lightest_edge_weight.get
                 )
@@ -143,6 +131,14 @@ def spanner(G, stretch, weight=None, seed=None):
                     ):
                         edges_to_remove.add((v, neighbor))
 
+            else:
+                # connect to each neighboring center via lightest edge
+                for neighbor in lightest_edge_neighbor.values():
+                    edges_to_add.add((v, neighbor))
+                # remove all incident edges
+                for neighbor in residual_graph.adj[v]:
+                    edges_to_remove.add((v, neighbor))
+
         # check whether iteration added too many edges to spanner,
         # if so repeat
         if len(edges_to_add) > size_limit:
@@ -150,7 +146,7 @@ def spanner(G, stretch, weight=None, seed=None):
             continue
 
         # iteration succeeded
-        i = i + 1
+        i += 1
 
         # actually add edges to spanner
         for u, v in edges_to_add:
@@ -213,11 +209,9 @@ def _setup_residual_graph(G, weight):
 
     # establish unique edge weights, even for unweighted graphs
     for u, v in G.edges():
-        if not weight:
-            residual_graph[u][v]["weight"] = (id(u), id(v))
-        else:
-            residual_graph[u][v]["weight"] = (G[u][v][weight], id(u), id(v))
-
+        residual_graph[u][v]["weight"] = (
+            (G[u][v][weight], id(u), id(v)) if weight else (id(u), id(v))
+        )
     return residual_graph
 
 

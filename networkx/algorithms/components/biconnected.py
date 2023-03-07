@@ -382,7 +382,5 @@ def _biconnected_dfs(G, components=True):
                         ind = edge_index[grandparent, parent]
                         yield edge_stack[ind:]
                         del edge_stack[ind:]
-        if not components:
-            # root node is articulation point if it has more than 1 child
-            if root_children > 1:
-                yield start
+        if not components and root_children > 1:
+            yield start

@@ -71,12 +71,12 @@ class TestPercolationCentrality:
             "Tornabuoni": 0.092,
         }
 
-        p_states = {k: 1.0 for k, v in b_answer.items()}
+        p_states = {k: 1.0 for k in b_answer}
         p_answer = nx.percolation_centrality(G, states=p_states)
         for n in sorted(G):
             assert p_answer[n] == pytest.approx(b_answer[n], abs=1e-3)
 
-        p_states = {k: 0.3 for k, v in b_answer.items()}
+        p_states = {k: 0.3 for k in b_answer}
         p_answer = nx.percolation_centrality(G, states=p_states)
         for n in sorted(G):
             assert p_answer[n] == pytest.approx(b_answer[n], abs=1e-3)

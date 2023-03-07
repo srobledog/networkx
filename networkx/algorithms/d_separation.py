@@ -206,10 +206,11 @@ def d_separated(G, x, y, z):
     disjoint_set.union(*x)
     disjoint_set.union(*y)
 
-    if x and y and disjoint_set[next(iter(x))] == disjoint_set[next(iter(y))]:
-        return False
-    else:
-        return True
+    return (
+        not x
+        or not y
+        or disjoint_set[next(iter(x))] != disjoint_set[next(iter(y))]
+    )
 
 
 @not_implemented_for("undirected")
@@ -290,8 +291,7 @@ def minimal_d_separator(G, u, v):
 
     # perform BFS on the graph from 'x' to mark
     Z_dprime = _bfs_with_marks(moral_G, u, Z_prime)
-    Z = _bfs_with_marks(moral_G, v, Z_dprime)
-    return Z
+    return _bfs_with_marks(moral_G, v, Z_dprime)
 
 
 @not_implemented_for("undirected")
@@ -390,10 +390,7 @@ def is_minimal_d_separator(G, u, v, z):
     # similarly, start BFS from Y and check the marks
     marks = _bfs_with_marks(moral_G, v, z)
     # if not all the Z is marked, then the set is not minimal
-    if any(node not in marks for node in z):
-        return False
-
-    return True
+    return all(node in marks for node in z)
 
 
 @not_implemented_for("directed")
@@ -419,12 +416,9 @@ def _bfs_with_marks(G, start_node, check_set):
     marked : set
         A set of nodes that were marked.
     """
-    visited = {}
     marked = set()
-    queue = []
-
-    visited[start_node] = None
-    queue.append(start_node)
+    visited = {start_node: None}
+    queue = [start_node]
     while queue:
         m = queue.pop(0)
 

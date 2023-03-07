@@ -148,7 +148,7 @@ def all_node_cuts(G, k=None, flow_func=None):
                 saturated_edges = [
                     (u, w, d)
                     for (u, w, d) in R.edges(data=True)
-                    if d["capacity"] == d["flow"] or d["capacity"] == 0
+                    if d["capacity"] in [d["flow"], 0]
                 ]
                 R.remove_edges_from(saturated_edges)
                 R_closure = nx.transitive_closure(R)
@@ -189,7 +189,9 @@ def all_node_cuts(G, k=None, flow_func=None):
                         cutset.update((u, w) for w in original_H_pred[u] if w not in S)
                     # The edges in H that form the cutset are internal edges
                     # (ie edges that represent a node of the original graph G)
-                    if any([H_nodes[u]["id"] != H_nodes[w]["id"] for u, w in cutset]):
+                    if any(
+                        H_nodes[u]["id"] != H_nodes[w]["id"] for u, w in cutset
+                    ):
                         continue
                     node_cut = {H_nodes[u]["id"] for u, _ in cutset}
 
@@ -227,6 +229,4 @@ def _is_separating_set(G, cut):
         return True
 
     H = nx.restricted_view(G, cut, [])
-    if nx.is_connected(H):
-        return False
-    return True
+    return not nx.is_connected(H)

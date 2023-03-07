@@ -66,7 +66,7 @@ def degree_centrality(G, nodes):
     s = 1.0 / len(bottom)
     centrality = {n: d * s for n, d in G.degree(top)}
     s = 1.0 / len(top)
-    centrality.update({n: d * s for n, d in G.degree(bottom)})
+    centrality |= {n: d * s for n, d in G.degree(bottom)}
     return centrality
 
 

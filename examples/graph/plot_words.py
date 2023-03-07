@@ -29,7 +29,7 @@ def generate_graph(words):
 
     def edit_distance_one(word):
         for i in range(len(word)):
-            left, c, right = word[0:i], word[i], word[i + 1 :]
+            left, c, right = word[:i], word[i], word[i + 1 :]
             j = lookup[c]  # lowercase.index(c)
             for cc in lowercase[j + 1 :]:
                 yield left + cc + right
@@ -54,7 +54,7 @@ def words_graph():
         line = line.decode()
         if line.startswith("*"):
             continue
-        w = str(line[0:5])
+        w = str(line[:5])
         words.add(w)
     return generate_graph(words)
 

@@ -191,15 +191,10 @@ def is_maximal_matching(G, matching):
         nodes.update(edge)
         edges.add(edge)
         edges.add((v, u))
-    # A matching is maximal if adding any new edge from G to it
-    # causes the resulting set to match some node twice.
-    # Be careful to check for adding selfloops
-    for u, v in G.edges:
-        if (u, v) not in edges:
-            # could add edge (u, v) to edges and have a bigger matching
-            if u not in nodes and v not in nodes and u != v:
-                return False
-    return True
+    return not any(
+        (u, v) not in edges and u not in nodes and v not in nodes and u != v
+        for u, v in G.edges
+    )
 
 
 def is_perfect_matching(G, matching):
@@ -390,7 +385,6 @@ def max_weight_matching(G, maxcardinality=False, weight="weight"):
 
     class NoNode:
         """Dummy value which is different from any node."""
-
     class Blossom:
         """Representation of a non-trivial blossom or sub-blossom."""
 
@@ -837,15 +831,10 @@ def max_weight_matching(G, maxcardinality=False, weight="weight"):
 
     # Verify that the optimum solution has been reached.
     def verifyOptimum():
-        if maxcardinality:
-            # Vertices may have negative dual;
-            # find a constant non-negative number to add to all vertex duals.
-            vdualoffset = max(0, -min(dualvar.values()))
-        else:
-            vdualoffset = 0
+        vdualoffset = max(0, -min(dualvar.values())) if maxcardinality else 0
         # 0. all dual variables are non-negative
         assert min(dualvar.values()) + vdualoffset >= 0
-        assert len(blossomdual) == 0 or min(blossomdual.values()) >= 0
+        assert not blossomdual or min(blossomdual.values()) >= 0
         # 0. all edges have non-negative slack and
         # 1. all matched edges have zero slack;
         for i, j, d in G.edges(data=True):
@@ -878,7 +867,8 @@ def max_weight_matching(G, maxcardinality=False, weight="weight"):
                 assert len(b.edges) % 2 == 1
                 for i, j in b.edges[1::2]:
                     assert mate[i] == j and mate[j] == i
-        # Ok.
+            # Ok.
+
 
     # Main loop: continue until no further improvement is possible.
     while 1:

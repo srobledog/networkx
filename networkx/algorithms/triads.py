@@ -207,7 +207,7 @@ def triadic_census(G, nodelist=None):
     if Nnot:
         # add non-nodeset nodes later in the ordering
         not_nodeset = G.nodes - nodeset
-        m.update((n, i + N) for i, n in enumerate(not_nodeset))
+        m |= ((n, i + N) for i, n in enumerate(not_nodeset))
 
     # build all_neighbor dicts for easy counting
     # After Python 3.8 can leave off these keys(). Speedup also using G._pred
@@ -298,11 +298,12 @@ def is_triad(G):
     >>> nx.is_triad(G)
     False
     """
-    if isinstance(G, nx.Graph):
-        if G.order() == 3 and nx.is_directed(G):
-            if not any((n, n) in G.edges() for n in G.nodes()):
-                return True
-    return False
+    return bool(
+        isinstance(G, nx.Graph)
+        and G.order() == 3
+        and nx.is_directed(G)
+        and all((n, n) not in G.edges() for n in G.nodes())
+    )
 
 
 @not_implemented_for("undirected")
@@ -326,8 +327,7 @@ def all_triplets(G):
     [(1, 2, 3), (1, 2, 4), (1, 3, 4), (2, 3, 4)]
 
     """
-    triplets = combinations(G.nodes(), 3)
-    return triplets
+    return combinations(G.nodes(), 3)
 
 
 @not_implemented_for("undirected")
@@ -492,15 +492,15 @@ def triad_type(G):
     elif num_edges == 3:
         for e1, e2, e3 in permutations(G.edges(), 3):
             if set(e1) == set(e2):
-                if e3[0] in e1:
-                    return "111U"
-                # e3[1] in e1:
-                return "111D"
+                return "111U" if e3[0] in e1 else "111D"
             elif set(e1).symmetric_difference(set(e2)) == set(e3):
-                if {e1[0], e2[0], e3[0]} == {e1[0], e2[0], e3[0]} == set(G.nodes()):
-                    return "030C"
-                # e3 == (e1[0], e2[1]) and e2 == (e1[1], e3[1]):
-                return "030T"
+                return (
+                    "030C"
+                    if {e1[0], e2[0], e3[0]}
+                    == {e1[0], e2[0], e3[0]}
+                    == set(G.nodes())
+                    else "030T"
+                )
     elif num_edges == 4:
         for e1, e2, e3, e4 in permutations(G.edges(), 4):
             if set(e1) == set(e2):
@@ -546,8 +546,7 @@ def random_triad(G, seed=None):
 
     """
     nodes = seed.sample(list(G.nodes()), 3)
-    G2 = G.subgraph(nodes)
-    return G2
+    return G.subgraph(nodes)
 
 
 """

@@ -259,7 +259,7 @@ def parse_edgelist(
                         f"Failed to convert {edge_key} data "
                         f"{edge_value} to type {edge_type}."
                     ) from err
-                edgedata.update({edge_key: edge_value})
+                edgedata[edge_key] = edge_value
         G.add_node(u, bipartite=0)
         G.add_node(v, bipartite=1)
         G.add_edge(u, v, **edgedata)

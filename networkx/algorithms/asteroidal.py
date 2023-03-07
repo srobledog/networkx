@@ -150,15 +150,10 @@ def create_component_structure(G):
     V = set(G.nodes)
     component_structure = {}
     for v in V:
-        label = 0
         closed_neighborhood = set(G[v]).union({v})
-        row_dict = {}
-        for u in closed_neighborhood:
-            row_dict[u] = 0
-
+        row_dict = {u: 0 for u in closed_neighborhood}
         G_reduced = G.subgraph(set(G.nodes) - closed_neighborhood)
-        for cc in nx.connected_components(G_reduced):
-            label += 1
+        for label, cc in enumerate(nx.connected_components(G_reduced), start=1):
             for u in cc:
                 row_dict[u] = label
 
